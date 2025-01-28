@@ -1,4 +1,4 @@
-import ffmpeg
+
 '''
 This script performs video encoding, decoding, and quality assessment using various codecs.
 It includes the following functionalities:
@@ -17,6 +17,7 @@ Usage:
 - Place input videos in the specified input folder.
 - Run the script to encode videos, calculate metrics, and display results.
 '''
+import ffmpeg
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
