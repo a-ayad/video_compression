@@ -19,6 +19,7 @@ Usage:
 '''
 import ffmpeg
 import os
+import re
 import pandas as pd
 import matplotlib.pyplot as plt
 from ffmpeg_quality_metrics import FfmpegQualityMetrics
@@ -41,18 +42,19 @@ ENCODER_SETTINGS = {
         "bitrate": None,
         "keyint": 50
     },
+    
+    "VVC": {
+    "codec": "libvvenc",
+    "crf": 28,
+    "preset": "medium",
+    "bitrate": None,
+    "keyint": 50
+    },
  
     "AV1_Optimized": {
         "codec": "libsvtav1",  # Intel SVT-AV1
         "crf": 30,
         "preset": "8",  # SVT-AV1 preset (0=highest quality, 12=fastest)
-        "bitrate": None,
-        "keyint": 50
-    },
-    "VP9": {
-        "codec": "libvpx-vp9",
-        "crf": 30,
-        "preset": "good",  # VP9 preset
         "bitrate": None,
         "keyint": 50
     },
@@ -137,6 +139,33 @@ def calculate_vmaf(input_file, encoded_file):
         return None
 
 def main():
+    """
+    Main function to perform video compression and analysis.
+    This function processes input videos from a specified folder, compresses them using different codecs,
+    and evaluates the results based on file size, VMAF score, encoding time, and decoding time. The results
+    are saved to a CSV file and visualized using bar and line charts.
+    Steps:
+    1. Create the output folder if it doesn't exist.
+    2. Iterate through input videos in the input folder.
+    3. For each video, compress it using different codecs and settings.
+    4. Calculate and print the input and output file sizes.
+    5. Calculate the VMAF score for the compressed video.
+    6. Measure the decoding time for the compressed video.
+    7. Append the results to a list.
+    8. Print the results list for debugging.
+    9. If no results are found, print a message and return.
+    10. Display the results in a DataFrame and save it to a CSV file.
+    11. Plot the results using bar and line charts.
+    Note:
+    - The function assumes the existence of the following global variables and functions:
+      - ENCODER_SETTINGS: A dictionary containing codec names and their settings.
+      - encode_video(input_file, output_file, settings): A function to encode the video.
+      - calculate_vmaf(input_file, output_file): A function to calculate the VMAF score.
+      - decode_video(output_file): A function to measure the decoding time.
+    - The function uses the pandas and matplotlib libraries for data handling and visualization.
+    Raises:
+    - Any exceptions raised by the os, pandas, or matplotlib libraries.
+    """
     input_folder = "videos"  # Folder containing input videos
     output_folder = "videos"  # Folder to save output videos
     os.makedirs(output_folder, exist_ok=True)
@@ -163,23 +192,52 @@ def main():
                     # Calculate file size (in MB)
                     file_size = os.path.getsize(output_file) / (1024 * 1024)
                     print("output file size: ", round(file_size, 2), "MB")
-                    print("Compression ratio ", round((file_size/file_size_input), 2)*100, "%")
+                    print("Compression factor ", round((file_size/file_size_input), 2)*100, "%")
                     # Calculate VMAF score
                     vmaf_score = calculate_vmaf(input_file, output_file)
+                    # Extract additional encoding metrics from the encoding log
+                    encoding_metrics = {
+                        "frame": None,
+                        "fps": None,
+                        "bitrate": None,
+                        "speed": None
+                    }
+                    print("Encoding Time: ", encoding_time)
+                    if encoding_time:
+                        frame_match = re.search(r"frame=\s*(\d+)", encoding_time)
+                        fps_match = re.search(r"fps=\s*([\d\.]+)", encoding_time)
+                        bitrate_match = re.search(r"bitrate=\s*([\d\.]+kbits/s)", encoding_time)
+                        speed_match = re.search(r"speed=\s*([\d\.]+x)", encoding_time)
 
+                        if frame_match:
+                            encoding_metrics["frame"] = frame_match.group(1)
+                        if fps_match:
+                            encoding_metrics["fps"] = fps_match.group(1)
+                        if bitrate_match:
+                            encoding_metrics["bitrate"] = bitrate_match.group(1)
+                        if speed_match:
+                            encoding_metrics["speed"] = speed_match.group(1)
+
+                    print(encoding_metrics)
+                   
+                    # Append results with additional encoding metrics
+                    
                     # Measure decoding time
                     decoding_time = decode_video(output_file)
 
-                    # Append results
+
                     results.append({
                         "Input File": file_name,
                         "Codec": codec_name,
                         "File Size (MB)": round(file_size, 2),
                         "VMAF": vmaf_score if vmaf_score else "Error",
                         "Encoding Time": encoding_time,
-                        "Decoding Time": decoding_time
+                        "Decoding Time": decoding_time,
+                        "Frame": encoding_metrics["frame"],
+                        "FPS": encoding_metrics["fps"],
+                        "Bitrate": encoding_metrics["bitrate"],
+                        "Speed": encoding_metrics["speed"]
                     })
-
     # Debug: Print the results list
     print("Results:", results)
 
@@ -191,7 +249,7 @@ def main():
     # Display results in a DataFrame
     df = pd.DataFrame(results)
     print(df)
-
+    df.to_csv("results.csv", index=False)
     # Plot the results
     plt.figure(figsize=(10, 6))
 

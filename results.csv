@@ -1,0 +1,6 @@
+Input File,Codec,File Size (MB),VMAF,Encoding Time,Decoding Time,Frame,FPS,Bitrate,Speed
+input_1.y4m,H264,43.16,85.31,frame=  500 fps= 47 q=-1.0 Lsize=   44194KiB time=00:00:09.96 bitrate=36349.1kbits/s speed=0.928x    ,1.11,500,47,36349.1kbits/s,0.928x
+input_1.y4m,HEVC,21.66,74.61,frame=  500 fps= 18 q=38.2 Lsize=   22178KiB time=00:00:09.96 bitrate=18241.4kbits/s speed=0.362x    ,1.76,500,18,18241.4kbits/s,0.362x
+input_1.y4m,VVC,7.11,10.69,frame=  500 fps=0.7 q=-0.0 Lsize=    7276KiB time=00:00:09.88 bitrate=6033.3kbits/s speed=0.0133x    ,3.25,500,0.7,6033.3kbits/s,0.0133x
+input_1.y4m,AV1_Optimized,73.9,94.81,frame=  500 fps= 36 q=30.0 Lsize=   75670KiB time=00:00:09.98 bitrate=62112.8kbits/s speed=0.719x    ,4.61,500,36,62112.8kbits/s,0.719x
+input_1.y4m,VP9_Optimized,126.97,97.52,frame=  500 fps=2.8 q=30.0 Lsize=  130019KiB time=00:00:10.00 bitrate=106511.6kbits/s speed=0.0557x    ,2.91,500,2.8,106511.6kbits/s,0.0557x
