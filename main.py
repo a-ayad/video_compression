@@ -43,14 +43,6 @@ ENCODER_SETTINGS = {
         "keyint": 50
     },
     
-    "VVC": {
-    "codec": "libvvenc",
-    "crf": 28,
-    "preset": "medium",
-    "bitrate": None,
-    "keyint": 50
-    },
- 
     "AV1_Optimized": {
         "codec": "libsvtav1",  # Intel SVT-AV1
         "crf": 30,
@@ -63,9 +55,42 @@ ENCODER_SETTINGS = {
         "crf": 30,
         "preset": "good",
         "bitrate": None,
-        "keyint": 50,
-        "row_mt": 1,  # Enable row-based multi-threading
-        "tile_columns": 2  # Split encoding into tiles for multi-threading
+        "keyint": 50
+    },
+    "AV1_AOM": {
+        "codec": "libaom-av1",
+        "crf": 30,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50
+    },
+    "AV1_rust": {
+        "codec": "librav1e",
+        "crf": 30,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50
+    },
+    "AV1_AMD ": {
+        "codec": "av1_amf",
+        "crf": 30,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50
+    },
+    "AV1_MF": {
+        "codec": "av1_mf",
+        "crf": 30,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50
+    },
+    "AV1_VAAPI": {
+        "codec": "av1_vaapi",
+        "crf": 30,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50
     }
 }
 
