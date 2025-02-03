@@ -1,0 +1,91 @@
+Input File,Codec,File Size (MB),VMAF,Encoding Time,Encoding Time Calculated,Decoding Time,Frame,FPS,Bitrate,Speed
+input_1.y4m,H264,7.45,99.97,frame=    6 fps=0.0 q=28.0 size=       0KiB time=00:00:00.16 bitrate=   2.4kbits/s speed=0.308x    ,3.78,0.35,6,0.0,2.4kbits/s,0.308x
+input_1.y4m,H264_NVENC,6.0,99.97,frame=   27 fps=0.0 q=27.0 size=     512KiB time=00:00:00.96 bitrate=4369.5kbits/s speed=1.84x    ,1.61,0.32,27,0.0,4369.5kbits/s,1.84x
+input_1.y4m,H264_QSV,0.0,Error,,,,,,,
+input_1.y4m,HEVC,3.33,99.53,frame=    3 fps=0.0 q=34.1 size=       0KiB time=00:00:00.04 bitrate=   8.8kbits/s speed=0.0766x    ,6.64,0.48,3,0.0,8.8kbits/s,0.0766x
+input_1.y4m,HEVC_NVENC,6.17,99.96,frame=   11 fps=0.0 q=27.0 size=     256KiB time=00:00:00.32 bitrate=6554.7kbits/s speed=0.629x    ,1.92,0.51,11,0.0,6554.7kbits/s,0.629x
+input_1.y4m,HEVC_QSV,0.0,Error,,,,,,,
+input_1.y4m,AV1_Rust,4.09,99.97,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,297.9,0.81,0,0.0,,
+input_1.y4m,AV1_SVT,5.56,99.98,frame=    1 fps=0.0 q=14.0 size=       0KiB time=00:00:00.00 bitrate=N/A speed=   0x    ,3.6,0.69,1,0.0,,0x
+input_1.y4m,AV1_NVENC,0.0,Error,,,,,,,
+input_1.y4m,AV1_QSV,0.0,Error,,,,,,,
+input_1.y4m,VP8,0.0,Error,,,,,,,
+input_1.y4m,VP8_VAAPI,0.0,Error,,,,,,,
+input_1.y4m,VP9,9.48,99.98,frame=    2 fps=0.0 q=30.0 size=     256KiB time=00:00:00.08 bitrate=26218.8kbits/s speed=0.155x    ,34.94,0.69,2,0.0,26218.8kbits/s,0.155x
+input_1.y4m,VP9_VAAPI,0.0,Error,,,,,,,
+input_1.y4m,VP9_QSV,0.0,Error,,,,,,,
+input_2.y4m,H264,31.07,94.79,frame=    1 fps=0.0 q=31.0 size=       0KiB time=-00:00:00.02 bitrate=N/A speed=N/A    ,12.98,1.02,1,0.0,,
+input_2.y4m,H264_NVENC,6.28,55.47,frame=   28 fps=0.0 q=47.0 size=     256KiB time=00:00:00.50 bitrate=4195.1kbits/s speed=0.974x    ,2.83,0.78,28,0.0,4195.1kbits/s,0.974x
+input_2.y4m,H264_QSV,0.0,Error,,,,,,,
+input_2.y4m,HEVC,17.5,84.88,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,35.39,1.93,0,0.0,,
+input_2.y4m,HEVC_NVENC,6.32,58.53,frame=   28 fps=0.0 q=47.0 size=     512KiB time=00:00:00.50 bitrate=8389.3kbits/s speed=0.981x    ,3.54,0.96,28,0.0,8389.3kbits/s,0.981x
+input_2.y4m,HEVC_QSV,0.0,Error,,,,,,,
+input_2.y4m,AV1_Rust,35.86,96.76,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,1571.44,4.22,0,0.0,,
+input_2.y4m,AV1_SVT,53.81,99.11,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,18.33,3.57,0,0.0,,
+input_2.y4m,AV1_NVENC,0.0,Error,,,,,,,
+input_2.y4m,AV1_QSV,0.0,Error,,,,,,,
+input_2.y4m,VP8,0.0,Error,,,,,,,
+input_2.y4m,VP8_VAAPI,0.0,Error,,,,,,,
+input_2.y4m,VP9,69.18,99.82,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,150.95,2.88,0,0.0,,
+input_2.y4m,VP9_VAAPI,0.0,Error,,,,,,,
+input_2.y4m,VP9_QSV,0.0,Error,,,,,,,
+input_3.y4m,H264,2.24,93.74,frame=   58 fps=0.0 q=31.0 size=       0KiB time=00:00:00.91 bitrate=   0.4kbits/s speed=1.77x    ,3.81,0.29,58,0.0,0.4kbits/s,1.77x
+input_3.y4m,H264_NVENC,6.1,96.23,frame=   57 fps=0.0 q=24.0 size=     512KiB time=00:00:00.90 bitrate=4660.8kbits/s speed=1.73x    ,1.65,0.42,57,0.0,4660.8kbits/s,1.73x
+input_3.y4m,H264_QSV,0.0,Error,,,,,,,
+input_3.y4m,HEVC,1.0,88.99,frame=   23 fps=0.0 q=37.8 size=       0KiB time=00:00:00.35 bitrate=   1.0kbits/s speed=0.674x    ,6.72,0.46,23,0.0,1.0kbits/s,0.674x
+input_3.y4m,HEVC_NVENC,6.04,96.15,frame=   61 fps=0.0 q=23.0 size=     512KiB time=00:00:00.96 bitrate=4339.3kbits/s speed= 1.9x    ,2.16,0.81,61,0.0,4339.3kbits/s,1.9x
+input_3.y4m,HEVC_QSV,0.0,Error,,,,,,,
+input_3.y4m,AV1_Rust,1.84,93.36,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,202.51,0.59,0,0.0,,
+input_3.y4m,AV1_SVT,3.14,95.61,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,4.34,0.51,0,0.0,,
+input_3.y4m,AV1_NVENC,0.0,Error,,,,,,,
+input_3.y4m,AV1_QSV,0.0,Error,,,,,,,
+input_3.y4m,VP8,0.0,Error,,,,,,,
+input_3.y4m,VP8_VAAPI,0.0,Error,,,,,,,
+input_3.y4m,VP9,3.89,95.43,frame=    8 fps=0.0 q=30.0 size=       0KiB time=00:00:00.13 bitrate=   2.6kbits/s speed=0.253x    ,31.37,0.58,8,0.0,2.6kbits/s,0.253x
+input_3.y4m,VP9_VAAPI,0.0,Error,,,,,,,
+input_3.y4m,VP9_QSV,0.0,Error,,,,,,,
+input_4.y4m,H264,7.31,90.7,frame=   33 fps=0.0 q=31.0 size=     256KiB time=00:00:00.62 bitrate=3383.1kbits/s speed=1.18x    ,5.13,0.43,33,0.0,3383.1kbits/s,1.18x
+input_4.y4m,H264_NVENC,6.37,88.25,frame=   58 fps=0.0 q=31.0 size=     768KiB time=00:00:01.10 bitrate=5719.9kbits/s speed=2.13x    ,1.57,0.43,58,0.0,5719.9kbits/s,2.13x
+input_4.y4m,H264_QSV,0.0,Error,,,,,,,
+input_4.y4m,HEVC,3.21,80.92,frame=   21 fps=0.0 q=37.9 size=       0KiB time=00:00:00.38 bitrate=   0.9kbits/s speed=0.738x    ,11.44,0.69,21,0.0,0.9kbits/s,0.738x
+input_4.y4m,HEVC_NVENC,6.55,88.57,frame=   85 fps=0.0 q=28.0 size=    1024KiB time=00:00:01.64 bitrate=5115.2kbits/s speed=3.13x    ,1.82,0.76,85,0.0,5115.2kbits/s,3.13x
+input_4.y4m,HEVC_QSV,0.0,Error,,,,,,,
+input_4.y4m,AV1_Rust,6.64,90.48,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,409.1,1.4,0,0.0,,
+input_4.y4m,AV1_SVT,7.95,92.19,frame=    1 fps=0.0 q=11.0 size=       0KiB time=00:00:00.00 bitrate=N/A speed=   0x    ,5.61,0.91,1,0.0,,0x
+input_4.y4m,AV1_NVENC,0.0,Error,,,,,,,
+input_4.y4m,AV1_QSV,0.0,Error,,,,,,,
+input_4.y4m,VP8,0.0,Error,,,,,,,
+input_4.y4m,VP8_VAAPI,0.0,Error,,,,,,,
+input_4.y4m,VP9,14.24,93.89,frame=    3 fps=0.0 q=28.0 size=     256KiB time=00:00:00.06 bitrate=34958.4kbits/s speed=0.117x    ,57.26,1.05,3,0.0,34958.4kbits/s,0.117x
+input_4.y4m,VP9_VAAPI,0.0,Error,,,,,,,
+input_4.y4m,VP9_QSV,0.0,Error,,,,,,,
+input_5.y4m,H264,9.72,92.45,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,10.76,0.68,0,0.0,,
+input_5.y4m,H264_NVENC,6.08,89.61,frame=   14 fps=0.0 q=31.0 size=       0KiB time=00:00:00.22 bitrate=   1.7kbits/s speed=0.43x    ,2.6,0.57,14,0.0,1.7kbits/s,0.43x
+input_5.y4m,H264_QSV,0.0,Error,,,,,,,
+input_5.y4m,HEVC,2.8,85.62,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,11.7,0.87,0,0.0,,
+input_5.y4m,HEVC_NVENC,6.23,90.86,frame=   26 fps=0.0 q=29.0 size=     256KiB time=00:00:00.46 bitrate=4559.8kbits/s speed=0.896x    ,3.57,0.99,26,0.0,4559.8kbits/s,0.896x
+input_5.y4m,HEVC_QSV,0.0,Error,,,,,,,
+input_5.y4m,AV1_Rust,7.23,91.95,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,716.53,2.16,0,0.0,,
+input_5.y4m,AV1_SVT,7.12,93.92,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,9.63,1.2,0,0.0,,
+input_5.y4m,AV1_NVENC,0.0,Error,,,,,,,
+input_5.y4m,AV1_QSV,0.0,Error,,,,,,,
+input_5.y4m,VP8,0.0,Error,,,,,,,
+input_5.y4m,VP8_VAAPI,0.0,Error,,,,,,,
+input_5.y4m,VP9,30.84,94.61,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,137.94,1.95,0,0.0,,
+input_5.y4m,VP9_VAAPI,0.0,Error,,,,,,,
+input_5.y4m,VP9_QSV,0.0,Error,,,,,,,
+input_6.y4m,H264,9.06,96.78,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,8.5,0.49,0,0.0,,
+input_6.y4m,H264_NVENC,9.22,96.54,frame=   16 fps=0.0 q=29.0 size=     256KiB time=00:00:00.52 bitrate=4033.7kbits/s speed=1.01x    ,2.85,0.52,16,0.0,4033.7kbits/s,1.01x
+input_6.y4m,H264_QSV,0.0,Error,,,,,,,
+input_6.y4m,HEVC,3.54,91.07,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,17.04,0.7,0,0.0,,
+input_6.y4m,HEVC_NVENC,9.42,97.95,frame=   32 fps=0.0 q=28.0 size=     768KiB time=00:00:01.16 bitrate=5424.0kbits/s speed=2.26x    ,2.75,1.01,32,0.0,5424.0kbits/s,2.26x
+input_6.y4m,HEVC_QSV,0.0,Error,,,,,,,
+input_6.y4m,AV1_Rust,5.48,96.28,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,564.87,0.89,0,0.0,,
+input_6.y4m,AV1_SVT,6.14,97.33,frame=    1 fps=0.0 q=13.0 size=       0KiB time=00:00:00.00 bitrate=N/A speed=   0x    ,5.71,0.73,1,0.0,,0x
+input_6.y4m,AV1_NVENC,0.0,Error,,,,,,,
+input_6.y4m,AV1_QSV,0.0,Error,,,,,,,
+input_6.y4m,VP8,0.0,Error,,,,,,,
+input_6.y4m,VP8_VAAPI,0.0,Error,,,,,,,
+input_6.y4m,VP9,8.97,98.37,frame=    2 fps=0.0 q=30.0 size=       0KiB time=00:00:00.08 bitrate=   4.4kbits/s speed=0.155x    ,40.28,0.64,2,0.0,4.4kbits/s,0.155x
+input_6.y4m,VP9_VAAPI,0.0,Error,,,,,,,
+input_6.y4m,VP9_QSV,0.0,Error,,,,,,,

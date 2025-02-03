@@ -32,7 +32,8 @@ def is_qsv_supported():
 
 
     return True  # QSV is working
-
+print("Checking hardware acceleration support...")
+print("Available encoders:", get_available_encoders())
 if is_qsv_supported():
     print("✅ Intel Quick Sync Video (QSV) is fully supported and working!")
 else:

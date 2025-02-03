@@ -26,6 +26,7 @@ from ffmpeg_quality_metrics import FfmpegQualityMetrics
 import time
 
 # Configurable parameters for all encoders
+'''
 ENCODER_SETTINGS = {
     "H264": {
         "codec": "libx264",
@@ -78,19 +79,158 @@ ENCODER_SETTINGS = {
         "bitrate": None,
         "keyint": 50
     },
-    "AV1_MF": {
-        "codec": "av1_mf",
-        "crf": 30,
+}'''
+
+ENCODER_SETTINGS = {
+    # 🔹 H.264 / AVC
+    "H264": {
+        "codec": "libx264",
+        "crf": 23,
         "preset": "medium",
         "bitrate": None,
-        "keyint": 50
+        "keyint": 50,
+ 
     },
-    "AV1_VAAPI": {
-        "codec": "av1_vaapi",
+    "H264_AMF": {
+        "codec": "h264_amf",   #amd iGPU
+        "crf": None,
+        "preset": "medium",
+        "bitrate": "5000k",
+        "keyint": 50,
+   
+    },
+    "H264_NVENC": {
+        "codec": "h264_nvenc", #nvidia codec
+        "crf": None,
+        "preset": "p7",
+        "bitrate": "5000k",
+        "keyint": 50,
+ 
+    },
+    "H264_QSV": {
+        "codec": "h264_qsv", #intel codec
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+      
+    },
+    # 🔹 H.265 / HEVC
+    "HEVC": {
+        "codec": "libx265",
+        "crf": 28,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50,
+    
+    },
+    "HEVC_AMF": {
+        "codec": "hevc_amf",
+        "crf": None,
+        "preset": "medium",
+        "bitrate": "5000k",
+        "keyint": 50,
+    
+    },
+    "HEVC_NVENC": {
+        "codec": "hevc_nvenc",
+        "crf": None,
+        "preset": "p7",
+        "bitrate": "5000k",
+        "keyint": 50,
+     
+    },
+    "HEVC_QSV": {
+        "codec": "hevc_qsv",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+       
+    },
+    # 🔹 AV1 (Next-Gen High-Efficiency)
+    "AV1_Rust": {
+        "codec": "librav1e",
         "crf": 30,
         "preset": "medium",
         "bitrate": None,
-        "keyint": 50
+        "keyint": 50,
+       
+    },
+    "AV1_SVT": {
+        "codec": "libsvtav1",
+        "crf": 30,
+        "preset": "8",
+        "bitrate": None,
+        "keyint": 50,
+  
+    },
+    "AV1_NVENC": {
+        "codec": "av1_nvenc",
+        "crf": None,
+        "preset": "p7",
+        "bitrate": "5000k",
+        "keyint": 50,
+     
+    },
+    "AV1_QSV": {
+        "codec": "av1_qsv",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+
+    },
+    "AV1_AMF": {
+        "codec": "av1_amf",
+        "crf": None,
+        "preset": "medium",
+        "bitrate": "5000k",
+        "keyint": 50,
+
+    },
+    # 🔹 VP8 & VP9 (Web Codecs)
+    "VP8": {
+        "codec": "libvpx",
+        "crf": 30,
+        "preset": "good",
+        "bitrate": None,
+        "keyint": 50,
+ 
+    },
+    "VP8_VAAPI": {
+        "codec": "vp8_vaapi",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+  
+    },
+    "VP9": {
+        "codec": "libvpx-vp9",
+        "crf": 30,
+        "preset": "good",
+        "bitrate": None,
+        "keyint": 50,
+        "row_mt": 1,
+        "tile_columns": 2,
+   
+    },
+    "VP9_VAAPI": {
+        "codec": "vp9_vaapi",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+     
+    },
+    "VP9_QSV": {
+        "codec": "vp9_qsv",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+    
     }
 }
 
@@ -99,39 +239,45 @@ def encode_video(input_file, output_file, settings):
     Encodes a video using specified codec settings.
     """
     try:
-        # Prepare the FFmpeg command with provided settings
+        # Prepare the output settings for FFmpeg
         output_args = {
             "vcodec": settings["codec"],
-            "crf": settings["crf"],
-            "preset": settings["preset"],
         }
-
+        if settings.get("crf") is not None:
+            output_args["crf"] = settings["crf"]
+        if settings.get("preset") is not None:
+            output_args["preset"] = settings["preset"]
         if settings.get("bitrate"):
             output_args["b:v"] = settings["bitrate"]
-
         if settings.get("keyint"):
             output_args["g"] = settings["keyint"]
-
         if settings.get("row_mt") is not None:
             output_args["row-mt"] = settings["row_mt"]
-
         if settings.get("tile_columns") is not None:
             output_args["tile-columns"] = settings["tile_columns"]
 
-        result = ffmpeg.input(input_file).output(output_file, **output_args).run(overwrite_output=True, capture_stdout=True, capture_stderr=True)
+        start_time = time.time()
+        result = ffmpeg.input(input_file).output(output_file, **output_args).run(
+            overwrite_output=True,
+            capture_stdout=True,
+            capture_stderr=True
+        )
+        end_time = time.time()
+        encoding_time_calculated = round(end_time - start_time,2)
         stderr = result[1].decode("utf-8")
 
-        # Extract encoding time from FFmpeg logs
-        encoding_time = None
+        # Extract encoding time from FFmpeg logs (simplistic extraction)
+        encoding_results = None
         for line in stderr.splitlines():
             if "time=" in line:
-                encoding_time = line
-        
+                encoding_results = line
+                break
+
         print(f"Encoded using {settings['codec']}: {output_file}")
-        return encoding_time
+        return encoding_results, encoding_time_calculated
     except ffmpeg.Error as e:
         print(f"Error encoding with {settings['codec']}: {e}")
-        return None
+        return None, None
 
 def decode_video(input_file):
     """
@@ -152,13 +298,17 @@ def calculate_vmaf(input_file, encoded_file):
     Calculates the VMAF and other quality metrics using ffmpeg-quality-metrics.
     """
     try:
+        # Example: downscale frames and sample every 10th frame.
         ffqm = FfmpegQualityMetrics(input_file, encoded_file)
         metrics = ffqm.calculate(["vmaf"])
-        # average the ssim_y values over all frames
-        avgvmaf= sum([frame["vmaf"] for frame in metrics["vmaf"]]) / len(metrics["vmaf"])
+        '''
+        ffqm = FfmpegQualityMetrics(input_file, encoded_file)
+        metrics = ffqm.calculate(["vmaf"])
+        '''
+        # Average the VMAF values over all frames
+        avgvmaf = sum([frame["vmaf"] for frame in metrics["vmaf"]]) / len(metrics["vmaf"])
         print(f"VMAF: {round(avgvmaf, 2)}")
         return round(avgvmaf, 2)
-    
     except Exception as e:
         print(f"Error calculating quality metrics: {e}")
         return None
@@ -166,33 +316,12 @@ def calculate_vmaf(input_file, encoded_file):
 def main():
     """
     Main function to perform video compression and analysis.
-    This function processes input videos from a specified folder, compresses them using different codecs,
-    and evaluates the results based on file size, VMAF score, encoding time, and decoding time. The results
-    are saved to a CSV file and visualized using bar and line charts.
-    Steps:
-    1. Create the output folder if it doesn't exist.
-    2. Iterate through input videos in the input folder.
-    3. For each video, compress it using different codecs and settings.
-    4. Calculate and print the input and output file sizes.
-    5. Calculate the VMAF score for the compressed video.
-    6. Measure the decoding time for the compressed video.
-    7. Append the results to a list.
-    8. Print the results list for debugging.
-    9. If no results are found, print a message and return.
-    10. Display the results in a DataFrame and save it to a CSV file.
-    11. Plot the results using bar and line charts.
-    Note:
-    - The function assumes the existence of the following global variables and functions:
-      - ENCODER_SETTINGS: A dictionary containing codec names and their settings.
-      - encode_video(input_file, output_file, settings): A function to encode the video.
-      - calculate_vmaf(input_file, output_file): A function to calculate the VMAF score.
-      - decode_video(output_file): A function to measure the decoding time.
-    - The function uses the pandas and matplotlib libraries for data handling and visualization.
-    Raises:
-    - Any exceptions raised by the os, pandas, or matplotlib libraries.
+    Processes input videos, compresses them using different codecs,
+    calculates file sizes, VMAF scores, encoding and decoding times,
+    and displays the results in a DataFrame and charts.
     """
     input_folder = "videos"  # Folder containing input videos
-    output_folder = "videos"  # Folder to save output videos
+    output_folder = "videos" # Folder to save output videos
     os.makedirs(output_folder, exist_ok=True)
 
     results = []
@@ -202,22 +331,23 @@ def main():
             input_file = os.path.join(input_folder, file_name)
             file_size_input = os.path.getsize(input_file) / (1024 * 1024)
             print("Input file size: ", round(file_size_input, 2), "MB")
-            # Extract number from input file name
+            # Extract file number from file name (assumes format input_XX.y4m)
             file_number = file_name.split("_")[1].split(".")[0]
 
-            # Iterate through each encoder and its settings
+            # Iterate through each encoder setting
             for codec_name, settings in ENCODER_SETTINGS.items():
                 output_file = os.path.join(output_folder, f"output_{file_number}_{codec_name.lower()}.mp4")
 
                 # Encode the video
-                encoding_time = encode_video(input_file, output_file, settings)
-
-                # Check if the output file exists
+                encoding_results,encoding_time_calculated = encode_video(input_file, output_file, settings)
+                if encoding_results==None:
+                    continue
                 if os.path.exists(output_file):
                     # Calculate file size (in MB)
                     file_size = os.path.getsize(output_file) / (1024 * 1024)
-                    print("output file size: ", round(file_size, 2), "MB")
-                    print("Compression factor ", round((file_size/file_size_input), 2)*100, "%")
+                    print("Output file size: ", round(file_size, 2), "MB")
+                    Compression_factor = round((file_size / file_size_input) * 100, 2)
+                    print("Compression factor: ", Compression_factor, "%")
                     # Calculate VMAF score
                     vmaf_score = calculate_vmaf(input_file, output_file)
                     # Extract additional encoding metrics from the encoding log
@@ -227,13 +357,12 @@ def main():
                         "bitrate": None,
                         "speed": None
                     }
-                    print("Encoding Time: ", encoding_time)
-                    if encoding_time:
-                        frame_match = re.search(r"frame=\s*(\d+)", encoding_time)
-                        fps_match = re.search(r"fps=\s*([\d\.]+)", encoding_time)
-                        bitrate_match = re.search(r"bitrate=\s*([\d\.]+kbits/s)", encoding_time)
-                        speed_match = re.search(r"speed=\s*([\d\.]+x)", encoding_time)
-
+                    print("Encoding Time Log: ", encoding_results)
+                    if encoding_results:
+                        frame_match = re.search(r"frame=\s*(\d+)", encoding_results)
+                        fps_match = re.search(r"fps=\s*([\d\.]+)", encoding_results)
+                        bitrate_match = re.search(r"bitrate=\s*([\d\.]+kbits/s)", encoding_results)
+                        speed_match = re.search(r"speed=\s*([\d\.]+x)", encoding_results)
                         if frame_match:
                             encoding_metrics["frame"] = frame_match.group(1)
                         if fps_match:
@@ -243,55 +372,49 @@ def main():
                         if speed_match:
                             encoding_metrics["speed"] = speed_match.group(1)
 
-                    print(encoding_metrics)
-                   
-                    # Append results with additional encoding metrics
-                    
+                    print("Encoding Metrics: ", encoding_metrics)
+                    print("calculated encoding time: ", encoding_time_calculated)
+
                     # Measure decoding time
                     decoding_time = decode_video(output_file)
-
 
                     results.append({
                         "Input File": file_name,
                         "Codec": codec_name,
-                        "File Size (MB)": round(file_size, 2),
+                        "Input File Size (MB)": round(file_size_input, 2),
+                        "Output File Size (MB)": round(file_size, 2),
+                        "Compression Rate": Compression_factor,
                         "VMAF": vmaf_score if vmaf_score else "Error",
-                        "Encoding Time": encoding_time,
+                        "Encoding Time": encoding_results,
+                        "Encoding Time Calculated": encoding_time_calculated,
                         "Decoding Time": decoding_time,
                         "Frame": encoding_metrics["frame"],
                         "FPS": encoding_metrics["fps"],
                         "Bitrate": encoding_metrics["bitrate"],
                         "Speed": encoding_metrics["speed"]
                     })
-    # Debug: Print the results list
+
     print("Results:", results)
 
-    # Check if results are empty
     if not results:
         print("No results to process. Please check your input files and encoding process.")
         return
 
-    # Display results in a DataFrame
+    # Display results in a DataFrame and save to CSV
     df = pd.DataFrame(results)
     print(df)
     df.to_csv("results.csv", index=False)
+
     # Plot the results
     plt.figure(figsize=(10, 6))
-
-    # Bar chart for file sizes
     for codec_name in ENCODER_SETTINGS.keys():
         codec_results = df[df["Codec"] == codec_name]
-        plt.bar(codec_results["Input File"], codec_results["File Size (MB)"], label=f"{codec_name} File Size", alpha=0.7)
-
-    # Line chart for VMAF scores
-    for codec_name in ENCODER_SETTINGS.keys():
-        codec_results = df[df["Codec"] == codec_name]
-        plt.plot(codec_results["Input File"], codec_results["VMAF"], marker="o", label=f"{codec_name} VMAF Score")
-
-    # Line chart for decoding time
-    for codec_name in ENCODER_SETTINGS.keys():
-        codec_results = df[df["Codec"] == codec_name]
-        plt.plot(codec_results["Input File"], codec_results["Decoding Time"], marker="x", label=f"{codec_name} Decoding Time")
+        plt.bar(codec_results["Input File"], codec_results["Output File Size (MB)"],
+                label=f"{codec_name} File Size", alpha=0.7)
+        plt.plot(codec_results["Input File"], codec_results["VMAF"], marker="o",
+                 label=f"{codec_name} VMAF Score")
+        plt.plot(codec_results["Input File"], codec_results["Decoding Time"], marker="x",
+                 label=f"{codec_name} Decoding Time")
 
     plt.xlabel("Input File")
     plt.ylabel("Value")

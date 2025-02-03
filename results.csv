@@ -1,7 +1,16 @@
-Input File,Codec,File Size (MB),VMAF,Encoding Time,Decoding Time,Frame,FPS,Bitrate,Speed
-input_1.y4m,h264_qsv,0.0,Error,,,,,,
-input_2.y4m,h264_qsv,0.0,Error,,,,,,
-input_3.y4m,h264_qsv,0.0,Error,,,,,,
-input_4.y4m,h264_qsv,0.0,Error,,,,,,
-input_5.y4m,h264_qsv,0.0,Error,,,,,,
-input_6.y4m,h264_qsv,0.0,Error,,,,,,
+Input File,Codec,Input File Size (MB),Output File Size (MB),Compression Rate,VMAF,Encoding Time,Encoding Time Calculated,Decoding Time,Frame,FPS,Bitrate,Speed
+input_1.y4m,H264,1483.16,43.16,2.91,85.31,frame=    3 fps=0.0 q=31.0 size=     256KiB time=00:00:00.02 bitrate=104876.8kbits/s speed=0.0393x    ,11.52,0.94,3,0.0,104876.8kbits/s,0.0393x
+input_1.y4m,H264_NVENC,1483.16,6.18,0.42,38.98,frame=   30 fps=0.0 q=37.0 size=     512KiB time=00:00:00.54 bitrate=7767.9kbits/s speed=1.05x    ,2.64,0.54,30,0.0,7767.9kbits/s,1.05x
+input_1.y4m,H264_QSV,1483.16,0.0,0.0,Error,,,,,,,
+input_1.y4m,HEVC,1483.16,21.66,1.46,74.6,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,32.35,1.53,0,0.0,,
+input_1.y4m,HEVC_NVENC,1483.16,6.35,0.43,43.86,frame=   30 fps=0.0 q=37.0 size=     512KiB time=00:00:00.54 bitrate=7767.9kbits/s speed=1.06x    ,3.47,0.69,30,0.0,7767.9kbits/s,1.06x
+input_1.y4m,HEVC_QSV,1483.16,0.0,0.0,Error,,,,,,,
+input_1.y4m,AV1_Rust,1483.16,58.51,3.95,89.65,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,1330.9,3.75,0,0.0,,
+input_1.y4m,AV1_SVT,1483.16,73.9,4.98,94.82,frame=    1 fps=0.0 q=16.0 size=       0KiB time=00:00:00.00 bitrate=N/A speed=   0x    ,13.12,4.18,1,0.0,,0x
+input_1.y4m,AV1_NVENC,1483.16,0.0,0.0,Error,,,,,,,
+input_1.y4m,AV1_QSV,1483.16,0.0,0.0,Error,,,,,,,
+input_1.y4m,VP8,1483.16,0.0,0.0,Error,,,,,,,
+input_1.y4m,VP8_VAAPI,1483.16,0.0,0.0,Error,,,,,,,
+input_1.y4m,VP9,1483.16,126.97,8.56,97.52,frame=    0 fps=0.0 q=0.0 size=       0KiB time=N/A bitrate=N/A speed=N/A    ,181.25,2.88,0,0.0,,
+input_1.y4m,VP9_VAAPI,1483.16,0.0,0.0,Error,,,,,,,
+input_1.y4m,VP9_QSV,1483.16,0.0,0.0,Error,,,,,,,
