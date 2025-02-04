@@ -1,0 +1,155 @@
+
+'''
+ENCODER_SETTINGS = {
+    # 🔹 H.264 / AVC
+    "H264": {
+        "codec": "libx264",
+        "crf": 23,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50,
+ 
+    },
+    "H264_AMF": {
+        "codec": "h264_amf",   #amd iGPU
+        "crf": None,
+        "preset": "medium",
+        "bitrate": "5000k",
+        "keyint": 50,
+   
+    },
+    "H264_NVENC": {
+        "codec": "h264_nvenc", #nvidia codec
+        "crf": None,
+        "preset": "p7",
+        "bitrate": "5000k",
+        "keyint": 50,
+ 
+    },
+    "H264_QSV": {
+        "codec": "h264_qsv", #intel codec
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+      
+    },
+    # 🔹 H.265 / HEVC
+    "HEVC": {
+        "codec": "libx265",
+        "crf": 28,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50,
+    
+    },
+    "HEVC_AMF": {
+        "codec": "hevc_amf",
+        "crf": None,
+        "preset": "medium",
+        "bitrate": "5000k",
+        "keyint": 50,
+    
+    },
+    "HEVC_NVENC": {
+        "codec": "hevc_nvenc",
+        "crf": None,
+        "preset": "p7",
+        "bitrate": "5000k",
+        "keyint": 50,
+     
+    },
+    "HEVC_QSV": {
+        "codec": "hevc_qsv",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+       
+    },
+    # 🔹 AV1 (Next-Gen High-Efficiency)
+    "AV1_Rust": {
+        "codec": "librav1e",
+        "crf": 30,
+        "preset": "medium",
+        "bitrate": None,
+        "keyint": 50,
+       
+    },
+    "AV1_SVT": {
+        "codec": "libsvtav1",
+        "crf": 30,
+        "preset": "8",
+        "bitrate": None,
+        "keyint": 50,
+  
+    },
+    "AV1_NVENC": {
+        "codec": "av1_nvenc",
+        "crf": None,
+        "preset": "p7",
+        "bitrate": "5000k",
+        "keyint": 50,
+     
+    },
+    "AV1_QSV": {
+        "codec": "av1_qsv",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+
+    },
+    "AV1_AMF": {
+        "codec": "av1_amf",
+        "crf": None,
+        "preset": "medium",
+        "bitrate": "5000k",
+        "keyint": 50,
+
+    },
+    # 🔹 VP8 & VP9 (Web Codecs)
+    "VP8": {
+        "codec": "libvpx",
+        "crf": 30,
+        "preset": "good",
+        "bitrate": None,
+        "keyint": 50,
+ 
+    },
+    "VP8_VAAPI": {
+        "codec": "vp8_vaapi",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+  
+    },
+    "VP9": {
+        "codec": "libvpx-vp9",
+        "crf": 30,
+        "preset": "good",
+        "bitrate": None,
+        "keyint": 50,
+        "row_mt": 1,
+        "tile_columns": 2,
+   
+    },
+    "VP9_VAAPI": {
+        "codec": "vp9_vaapi",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+     
+    },
+    "VP9_QSV": {
+        "codec": "vp9_qsv",
+        "crf": None,
+        "preset": None,
+        "bitrate": "5000k",
+        "keyint": 50,
+    
+    }
+}
+'''

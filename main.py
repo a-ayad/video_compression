@@ -26,213 +26,57 @@ from ffmpeg_quality_metrics import FfmpegQualityMetrics
 import time
 
 # Configurable parameters for all encoders
-'''
-ENCODER_SETTINGS = {
-    "H264": {
-        "codec": "libx264",
-        "crf": 23,  # Constant Rate Factor
-        "preset": "medium",  # Encoding speed vs. efficiency
-        "bitrate": None,  # Use None for CRF-based encoding
-        "keyint": 50  # Keyframe interval
-    },
-   
-    "HEVC": {
-        "codec": "libx265",
-        "crf": 28,
-        "preset": "medium",
-        "bitrate": None,
-        "keyint": 50
-    },
-    
-    "AV1_Optimized": {
-        "codec": "libsvtav1",  # Intel SVT-AV1
-        "crf": 30,
-        "preset": "8",  # SVT-AV1 preset (0=highest quality, 12=fastest)
-        "bitrate": None,
-        "keyint": 50
-    },
-    "VP9_Optimized": {
-        "codec": "libvpx-vp9",  # Optimized VP9 with multi-threading
-        "crf": 30,
-        "preset": "good",
-        "bitrate": None,
-        "keyint": 50
-    },
-    "AV1_AOM": {
-        "codec": "libaom-av1",
-        "crf": 30,
-        "preset": "medium",
-        "bitrate": None,
-        "keyint": 50
-    },
-    "AV1_rust": {
-        "codec": "librav1e",
-        "crf": 30,
-        "preset": "medium",
-        "bitrate": None,
-        "keyint": 50
-    },
-    "AV1_AMD ": {
-        "codec": "av1_amf",
-        "crf": 30,
-        "preset": "medium",
-        "bitrate": None,
-        "keyint": 50
-    },
-}'''
 
+# Recommended encoder settings with inline comments
 ENCODER_SETTINGS = {
-    # 🔹 H.264 / AVC
     "H264": {
-        "codec": "libx264",
-        "crf": 23,
-        "preset": "medium",
-        "bitrate": None,
-        "keyint": 50,
- 
-    },
-    "H264_AMF": {
-        "codec": "h264_amf",   #amd iGPU
-        "crf": None,
-        "preset": "medium",
-        "bitrate": "5000k",
-        "keyint": 50,
-   
+        "codec": "libx264",       # Software encoder for H.264
+        "preset": "medium",       # Determines encoding speed vs. compression efficiency; slower presets improve compression (e.g., "slow")
+        "crf": 23,                # Constant Rate Factor: lower value means better quality (range ~18–23 is typical for visually lossless output)
+        "keyint": 50,             # Keyframe interval (in frames); defines how often an I-frame is inserted. Lower values improve seeking but increase file size.
     },
     "H264_NVENC": {
-        "codec": "h264_nvenc", #nvidia codec
-        "crf": None,
-        "preset": "p7",
-        "bitrate": "5000k",
-        "keyint": 50,
- 
+        "codec": "h264_nvenc",    # Nvidia hardware encoder for H.264
+        "preset": "p4",           # NVENC presets range from p1 (fastest) to p7 (highest quality); p4 is a balanced starting point
+        "rc": "vbr",              # Rate control mode: 'vbr' indicates variable bitrate encoding
+        "cq": 19,                 # Constant quantizer value for NVENC; lower values mean better quality (similar in purpose to CRF)
+        "keyint": 50,             # Keyframe interval
     },
-    "H264_QSV": {
-        "codec": "h264_qsv", #intel codec
-        "crf": None,
-        "preset": None,
-        "bitrate": "5000k",
-        "keyint": 50,
-      
-    },
-    # 🔹 H.265 / HEVC
     "HEVC": {
-        "codec": "libx265",
-        "crf": 28,
-        "preset": "medium",
-        "bitrate": None,
-        "keyint": 50,
-    
-    },
-    "HEVC_AMF": {
-        "codec": "hevc_amf",
-        "crf": None,
-        "preset": "medium",
-        "bitrate": "5000k",
-        "keyint": 50,
-    
+        "codec": "libx265",       # Software encoder for HEVC (H.265)
+        "preset": "medium",       # Balance between encoding speed and compression efficiency for HEVC
+        "crf": 28,                # HEVC typically requires higher CRF values than H.264; 28 is a common starting point
+        "keyint": 50,             # Keyframe interval
     },
     "HEVC_NVENC": {
-        "codec": "hevc_nvenc",
-        "crf": None,
-        "preset": "p7",
-        "bitrate": "5000k",
-        "keyint": 50,
-     
+        "codec": "hevc_nvenc",    # Nvidia hardware encoder for HEVC
+        "preset": "p4",           # NVENC preset for HEVC
+        "rc": "vbr",              # Use variable bitrate encoding
+        "cq": 22,                 # Constant quantizer for HEVC NVENC; adjust based on quality needs
+        "keyint": 50,             # Keyframe interval
     },
-    "HEVC_QSV": {
-        "codec": "hevc_qsv",
-        "crf": None,
-        "preset": None,
-        "bitrate": "5000k",
-        "keyint": 50,
-       
+    "AV1_Optimized": {
+        "codec": "libsvtav1",     # SVT-AV1 encoder; widely regarded for good quality/efficiency balance in AV1
+        "preset": "8",            # Numeric preset for SVT-AV1; higher numbers generally yield better quality but slower encoding
+        "crf": 30,                # CRF for AV1; starting around 30 is common—lower for higher quality, but at the cost of speed and file size
+        "keyint": 50,             # Keyframe interval
     },
-    # 🔹 AV1 (Next-Gen High-Efficiency)
     "AV1_Rust": {
-        "codec": "librav1e",
-        "crf": 30,
-        "preset": "medium",
-        "bitrate": None,
-        "keyint": 50,
-       
+        "codec": "librav1e",      # Rust-based AV1 encoder
+        "preset": "4",            # Preset value for rav1e; lower numbers are slower and higher quality, adjust as needed
+        "crf": 35,                # CRF-like parameter for rav1e; a value around 35 is a balanced starting point
+        "keyint": 50,             # Keyframe interval
     },
-    "AV1_SVT": {
-        "codec": "libsvtav1",
-        "crf": 30,
-        "preset": "8",
-        "bitrate": None,
-        "keyint": 50,
-  
+    "AV1_Fallback": {
+        "codec": "libaom-av1",    # AOM AV1 encoder, often slower but serves as a fallback
+        "preset": "medium",       # Preset for libaom-av1; adjust with additional parameters if desired
+        "crf": 30,                # CRF for AV1; common starting point for quality control
+        "b:v": "0",               # Setting bitrate to 0 for constant quality mode with libaom
+        "cpu-used": 4,            # A parameter to trade off encoding speed for quality (lower means higher quality)
+        "keyint": 50,             # Keyframe interval
     },
-    "AV1_NVENC": {
-        "codec": "av1_nvenc",
-        "crf": None,
-        "preset": "p7",
-        "bitrate": "5000k",
-        "keyint": 50,
-     
-    },
-    "AV1_QSV": {
-        "codec": "av1_qsv",
-        "crf": None,
-        "preset": None,
-        "bitrate": "5000k",
-        "keyint": 50,
-
-    },
-    "AV1_AMF": {
-        "codec": "av1_amf",
-        "crf": None,
-        "preset": "medium",
-        "bitrate": "5000k",
-        "keyint": 50,
-
-    },
-    # 🔹 VP8 & VP9 (Web Codecs)
-    "VP8": {
-        "codec": "libvpx",
-        "crf": 30,
-        "preset": "good",
-        "bitrate": None,
-        "keyint": 50,
- 
-    },
-    "VP8_VAAPI": {
-        "codec": "vp8_vaapi",
-        "crf": None,
-        "preset": None,
-        "bitrate": "5000k",
-        "keyint": 50,
-  
-    },
-    "VP9": {
-        "codec": "libvpx-vp9",
-        "crf": 30,
-        "preset": "good",
-        "bitrate": None,
-        "keyint": 50,
-        "row_mt": 1,
-        "tile_columns": 2,
-   
-    },
-    "VP9_VAAPI": {
-        "codec": "vp9_vaapi",
-        "crf": None,
-        "preset": None,
-        "bitrate": "5000k",
-        "keyint": 50,
-     
-    },
-    "VP9_QSV": {
-        "codec": "vp9_qsv",
-        "crf": None,
-        "preset": None,
-        "bitrate": "5000k",
-        "keyint": 50,
-    
-    }
 }
+
 
 def encode_video(input_file, output_file, settings):
     """
@@ -249,12 +93,23 @@ def encode_video(input_file, output_file, settings):
             output_args["preset"] = settings["preset"]
         if settings.get("bitrate"):
             output_args["b:v"] = settings["bitrate"]
+        if settings.get("b:v"):
+            output_args["b:v"] = settings["b:v"]
         if settings.get("keyint"):
             output_args["g"] = settings["keyint"]
         if settings.get("row_mt") is not None:
             output_args["row-mt"] = settings["row_mt"]
+        if settings.get("rc") is not None:
+            output_args["rc"] = settings["rc"]
+        if settings.get("cq") is not None:
+            output_args["cq"] = settings["cq"]
+        if settings.get("cpu-used") is not None:
+            output_args["cpu-used"] = settings["cpu-used"]
         if settings.get("tile_columns") is not None:
             output_args["tile-columns"] = settings["tile_columns"]
+    
+    # Copy audio by default (or you can customize this too)
+        #cmd.extend(["-c:a", "copy", output_file])
 
         start_time = time.time()
         result = ffmpeg.input(input_file).output(output_file, **output_args).run(
