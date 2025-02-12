@@ -29,36 +29,17 @@ import time
 
 # Recommended encoder settings with inline comments
 ENCODER_SETTINGS = {
-    "H264": {
-        "codec": "libx264",       # Software encoder for H.264
-        "preset": "medium",       # Determines encoding speed vs. compression efficiency; slower presets improve compression (e.g., "slow")
-        "crf": 23,                # Constant Rate Factor: lower value means better quality (range ~18–23 is typical for visually lossless output)
-        "keyint": 50,             # Keyframe interval (in frames); defines how often an I-frame is inserted. Lower values improve seeking but increase file size.
-    },
-    "H264_NVENC": {
-        "codec": "h264_nvenc",    # Nvidia hardware encoder for H.264
-        "preset": "p4",           # NVENC presets range from p1 (fastest) to p7 (highest quality); p4 is a balanced starting point
-        "rc": "vbr",              # Rate control mode: 'vbr' indicates variable bitrate encoding
-        "cq": 19,                 # Constant quantizer value for NVENC; lower values mean better quality (similar in purpose to CRF)
-        "keyint": 50,             # Keyframe interval
-    },
-    "HEVC": {
-        "codec": "libx265",       # Software encoder for HEVC (H.265)
-        "preset": "medium",       # Balance between encoding speed and compression efficiency for HEVC
-        "crf": 28,                # HEVC typically requires higher CRF values than H.264; 28 is a common starting point
-        "keyint": 50,             # Keyframe interval
-    },
-    "HEVC_NVENC": {
-        "codec": "hevc_nvenc",    # Nvidia hardware encoder for HEVC
-        "preset": "p4",           # NVENC preset for HEVC
-        "rc": "vbr",              # Use variable bitrate encoding
-        "cq": 22,                 # Constant quantizer for HEVC NVENC; adjust based on quality needs
-        "keyint": 50,             # Keyframe interval
-    },
     "AV1_Optimized": {
         "codec": "libsvtav1",     # SVT-AV1 encoder; widely regarded for good quality/efficiency balance in AV1
         "preset": "8",            # Numeric preset for SVT-AV1; higher numbers generally yield better quality but slower encoding
         "crf": 30,                # CRF for AV1; starting around 30 is common—lower for higher quality, but at the cost of speed and file size
+        "keyint": 50,             # Keyframe interval
+    },
+    "AV1_NVENC": {
+        "codec": "av1_nvenc",    # Nvidia hardware encoder for H.264
+        "preset": "p4",           # NVENC presets range from p1 (fastest) to p7 (highest quality); p4 is a balanced starting point
+        "rc": "vbr",              # Rate control mode: 'vbr' indicates variable bitrate encoding
+        "cq": 19,                 # Constant quantizer value for NVENC; lower values mean better quality (similar in purpose to CRF)
         "keyint": 50,             # Keyframe interval
     },
     "AV1_Rust": {
@@ -75,6 +56,33 @@ ENCODER_SETTINGS = {
         "cpu-used": 4,            # A parameter to trade off encoding speed for quality (lower means higher quality)
         "keyint": 50,             # Keyframe interval
     },
+    "H264": {
+        "codec": "libx264",       # Software encoder for H.264
+        "preset": "medium",       # Determines encoding speed vs. compression efficiency; slower presets improve compression (e.g., "slow")
+        "crf": 23,                # Constant Rate Factor: lower value means better quality (range ~18–23 is typical for visually lossless output)
+        "keyint": 50,             # Keyframe interval (in frames); defines how often an I-frame is inserted. Lower values improve seeking but increase file size.
+    },
+    "H266_VVC": {
+        "codec": "libvvenc",    # Nvidia hardware encoder for H.264
+        "preset": "p4",           # NVENC presets range from p1 (fastest) to p7 (highest quality); p4 is a balanced starting point
+        "crf": 28,              # Rate control mode: 'vbr' indicates variable bitrate encoding
+                                # Constant quantizer value for NVENC; lower values mean better quality (similar in purpose to CRF)
+        "keyint": 50,             # Keyframe interval
+    },
+    "HEVC": {
+        "codec": "libx265",       # Software encoder for HEVC (H.265)
+        "preset": "medium",       # Balance between encoding speed and compression efficiency for HEVC
+        "crf": 28,                # HEVC typically requires higher CRF values than H.264; 28 is a common starting point
+        "keyint": 50,             # Keyframe interval
+    },
+    "HEVC_NVENC": {
+        "codec": "hevc_nvenc",    # Nvidia hardware encoder for HEVC
+        "preset": "p4",           # NVENC preset for HEVC
+        "rc": "vbr",              # Use variable bitrate encoding
+        "cq": 22,                 # Constant quantizer for HEVC NVENC; adjust based on quality needs
+        "keyint": 50,             # Keyframe interval
+    },
+    
 }
 
 
