@@ -31,49 +31,6 @@ def compute_texture_complexity(gray_frame):
 
 
 
-def lookup_crf(avg_motion, avg_edge_density, avg_texture,
-               motion_max=5.0, edge_max=0.5, texture_max=10.0,
-               crf_static=30, crf_dynamic=18):
-    """
-    Map the average scene features to a CRF value using weighted linear interpolation.
-    
-    Parameters:
-      avg_motion: Average motion metric from the scene.
-      avg_edge_density: Average edge density (fraction between 0 and 1).
-      avg_texture: Average texture complexity (e.g., entropy).
-      motion_max, edge_max, texture_max:
-          Estimated maximum values for normalization.
-      crf_static: CRF value for a very static/low-complexity scene.
-      crf_dynamic: CRF value for a highly dynamic/complex scene.
-    
-    Returns:
-      An integer CRF value interpolated between crf_static and crf_dynamic.
-    """
-    # Normalize each feature to a range of 0 to 1.
-    norm_motion = min(avg_motion / motion_max, 1.0)
-    norm_edge = min(avg_edge_density / edge_max, 1.0)
-    norm_texture = min(avg_texture / texture_max, 1.0)
-    
-    # Create a weighted composite score.
-    # Here we assume motion is most important, then edge density, then texture.
-    weight_motion = 0.6
-    weight_edge = 0.2
-    weight_texture = 0.2
-    composite_score = (weight_motion * norm_motion +
-                       weight_edge * norm_edge +
-                       weight_texture * norm_texture)
-    
-    # Use linear interpolation:
-    # composite_score=0 -> CRF = crf_static (more compression)
-    # composite_score=1 -> CRF = crf_dynamic (better quality)
-    crf = crf_static - composite_score * (crf_static - crf_dynamic)
-  
-    print("Normalized Metrics:")
-    print("norm_motion =", norm_motion)
-    print("norm_edge =", norm_edge)
-    print("norm_texture =", norm_texture)
-    print("Composite Score =", composite_score)
-    return round(crf)
 
 
 
@@ -98,7 +55,7 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
     # Optionally, scale down the frame
     if scale_factor != 1.0:
         prev_frame = cv2.resize(prev_frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LINEAR)
-        print("Resized frame to: {}".format(prev_frame.shape))
+        #print("Resized frame to: {}".format(prev_frame.shape))
     prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
     
     motion_metrics = []
@@ -133,16 +90,16 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
     avg_edge_density = np.mean(edge_densities) if edge_densities else 0
     avg_texture = np.mean(texture_complexities) if texture_complexities else 0
     
-    print("Average Motion Metric: {:.3f}".format(avg_motion))
-    print("Average Edge Density: {:.3f}".format(avg_edge_density))
-    print("Average Texture Complexity (Entropy): {:.3f}".format(avg_texture))
+    #print("Average Motion Metric: {:.3f}".format(avg_motion))
+    #print("Average Edge Density: {:.3f}".format(avg_edge_density))
+    #print("Average Texture Complexity (Entropy): {:.3f}".format(avg_texture))
 
 
     
     return avg_motion, avg_edge_density, avg_texture
 
 
-if name == "__main__":
+if __name__ == "__main__":
    
 # Example usage:
     video_path = './videos/videos_2/output-Scene-002.mp4'
