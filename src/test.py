@@ -97,5 +97,9 @@ if __name__ == "__main__":
     path=os.path.join(cwd,'src','data')
     input_file=os.path.join(path,'merged_results.csv')
     output_file=os.path.join(path,'preprocessed_data.csv')
-    preprocess_data(output_file)
-    vmaf_Scaler=get_vmaf_scaler_from_pipeline(os.path.join(path,'preprocessing_pipeline.pkl'))
+    test=pd.read_csv(input_file, nrows=1)
+    print(test.columns.tolist())
+
+
+    #preprocess_data(output_file)
+    #vmaf_Scaler=get_vmaf_scaler_from_pipeline(os.path.join(path,'preprocessing_pipeline.pkl'))

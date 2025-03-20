@@ -382,7 +382,7 @@ def create_preprocessing_pipeline(input_file=None, output_file=None, pipeline_fi
     
     # Features to scale with min-max
     feature_columns = [
-        'cq_numeric',
+        'cq',
         'metrics_frame_rate_numeric', 
         'resolution_ordinal',
         'metrics_avg_motion', 
@@ -403,7 +403,6 @@ def create_preprocessing_pipeline(input_file=None, output_file=None, pipeline_fi
         ('column_dropper', ColumnDropper(columns_to_drop)),
         ('resolution_transformer', ResolutionTransformer()),
         ('frame_rate_transformer', NumericFeatureTransformer('metrics_frame_rate')),
-        ('cq_transformer', NumericFeatureTransformer('cq')),
         # Scale VMAF explicitly
         ('vmaf_scaler', vmaf_scaler),
         # Scale all features EXCEPT vmaf (which is already scaled)
@@ -495,178 +494,15 @@ def preprocess_new_data(df, pipeline=None, pipeline_file=None, return_target=Fal
 
 
 
-# Function to find optimal CQ for target VMAF 
-def find_optimal_cq(trained_model, target_vmaf, video_features, min_cq=10, max_cq=58, 
-                   pipeline=None, margin=0.5, verbose=True):
-    """
-    Find the highest CQ value that meets or exceeds the target VMAF score.
-    
-    Args:
-        trained_model: Model that predicts VMAF from features including CQ
-        target_vmaf: Desired VMAF score (0-1 scale if VMAF was scaled)
-        video_features: DataFrame containing video features (excluding CQ)
-        min_cq: Minimum CQ to consider (typically 10)
-        max_cq: Maximum CQ to consider (typically 58)
-        pipeline: Preprocessing pipeline used for feature scaling
-        margin: Safety margin to ensure we meet the quality threshold
-        verbose: Whether to print debugging information
-        
-    Returns:
-        Tuple of (optimal_cq, predicted_vmaf, is_reliable)
-    """
-    if pipeline is None:
-        raise ValueError("Pipeline is required for feature scaling")
-    
-    # Get scaling parameters for CQ
-    if 'feature_scaler' not in pipeline.named_steps:
-        raise ValueError("Pipeline must include feature_scaler")
-    
-    feature_scaler = pipeline.named_steps['feature_scaler']
-    
-    if 'cq_numeric' not in feature_scaler.feature_min or 'cq_numeric' not in feature_scaler.feature_max:
-        raise ValueError("CQ scaling parameters not found in pipeline")
-    
-    # Get CQ scaling range
-    cq_min = feature_scaler.feature_min['cq_numeric']
-    cq_max = feature_scaler.feature_max['cq_numeric']
-    
-    # Get VMAF scaler to check if we need to scale the target
-    vmaf_scaler = None
-    if 'vmaf_scaler' in pipeline.named_steps:
-        vmaf_scaler = pipeline.named_steps['vmaf_scaler']
-    
-    # Apply scaling to target VMAF if needed
-    scaled_target_vmaf = target_vmaf
-    if vmaf_scaler and vmaf_scaler.min_val is not None and vmaf_scaler.max_val is not None:
-        # Check if the target is already in [0,1] range (already scaled)
-        if target_vmaf > 0 and target_vmaf < 1:
-            scaled_target_vmaf = target_vmaf  # Already scaled
-            original_target = target_vmaf * (vmaf_scaler.max_val - vmaf_scaler.min_val) + vmaf_scaler.min_val
-            if verbose:
-                print(f"Target VMAF {target_vmaf} appears to be scaled (original: ~{original_target:.2f})")
-        else:
-            # Scale from original VMAF range to [0,1]
-            scaled_target_vmaf = (target_vmaf - vmaf_scaler.min_val) / (vmaf_scaler.max_val - vmaf_scaler.min_val)
-            if verbose:
-                print(f"Scaled target VMAF from {target_vmaf} to {scaled_target_vmaf:.4f}")
-    
-    # Add safety margin to target
-    target_with_margin = scaled_target_vmaf + margin
-    if verbose:
-        print(f"Target VMAF with margin: {target_with_margin:.4f}")
-    
-    # Binary search variables
-    low = min_cq
-    high = max_cq
-    best_cq = low  # Start with highest quality as fallback
-    best_vmaf = None
-    all_results = []  # Track all tested points
-    
-    # Define a function to make and scale predictions
-    def predict_vmaf(cq_value):
-        # Scale CQ value for the model
-        scaled_cq = (cq_value - min_cq) / (max_cq - min_cq)
-        
-        # Create features with this CQ
-        test_features = video_features.copy()
-        test_features['cq_numeric'] = scaled_cq
-        
-        # Convert to array format expected by model
-        X = test_features.values.reshape(1, -1)
-        
-        # Predict VMAF
-        predicted = trained_model.predict(X)[0]
-        
-        # Store result
-        all_results.append((cq_value, predicted))
-        
-        # Unscale prediction if needed to show VMAF in original scale
-        unscaled_prediction = predicted
-        if vmaf_scaler and vmaf_scaler.min_val is not None and vmaf_scaler.max_val is not None:
-            unscaled_prediction = predicted * (vmaf_scaler.max_val - vmaf_scaler.min_val) + vmaf_scaler.min_val
-        
-        if verbose:
-            print(f"CQ {cq_value}: Predicted VMAF = {unscaled_prediction:.2f}")
-            
-        return predicted, unscaled_prediction
-    
-    # Binary search for optimal CQ
-    iterations = 0
-    max_iterations = 20  # Prevent infinite loops
-    
-    while high - low > 1 and iterations < max_iterations:
-        iterations += 1
-        mid = (low + high) // 2
-        
-        # Predict VMAF for this CQ
-        scaled_vmaf, unscaled_vmaf = predict_vmaf(mid)
-        
-        # Check if this meets our target with margin
-        if scaled_vmaf >= target_with_margin:
-            # Quality is still good enough with this CQ, try more compression
-            low = mid
-            best_cq = mid  # Update best known good CQ
-            best_vmaf = unscaled_vmaf
-        else:
-            # Quality is too low, try less compression
-            high = mid
-    
-    # Verification step - check that our optimal CQ actually meets the target
-    if best_vmaf is None:
-        # If we haven't found a valid solution, check the lowest CQ
-        scaled_vmaf, unscaled_vmaf = predict_vmaf(low)
-        best_cq = low
-        best_vmaf = unscaled_vmaf
-    
-    # Check the next higher CQ value to confirm we found the boundary
-    if best_cq < max_cq:
-        next_cq = best_cq + 1
-        next_scaled_vmaf, next_unscaled_vmaf = predict_vmaf(next_cq)
-        
-        # If the next CQ still meets our target, something went wrong in our search
-        if next_scaled_vmaf >= target_with_margin:
-            if verbose:
-                print(f"Warning: CQ {next_cq} still meets quality target. Updating best CQ.")
-            best_cq = next_cq
-            best_vmaf = next_unscaled_vmaf
-    
-    # Check if our solution meets the target
-    # For this comparison, convert everything to original scale
-    original_target = target_vmaf
-    if vmaf_scaler and vmaf_scaler.min_val is not None and vmaf_scaler.max_val is not None:
-        if target_vmaf > 0 and target_vmaf < 1:  # If target was given in scaled form
-            original_target = target_vmaf * (vmaf_scaler.max_val - vmaf_scaler.min_val) + vmaf_scaler.min_val
-    
-    is_reliable = best_vmaf >= original_target
-    
-    # Sort results by CQ for a clear overview
-    all_results.sort(key=lambda x: x[0])
-    
-    if verbose:
-        print("\nAll tested CQ values:")
-        for cq, scaled_pred in all_results:
-            # Unscale for display
-            unscaled_pred = scaled_pred
-            if vmaf_scaler and vmaf_scaler.min_val is not None and vmaf_scaler.max_val is not None:
-                unscaled_pred = scaled_pred * (vmaf_scaler.max_val - vmaf_scaler.min_val) + vmaf_scaler.min_val
-            print(f"CQ {cq}: VMAF = {unscaled_pred:.2f}")
-        
-        print(f"\nOptimal CQ: {best_cq} (predicted VMAF: {best_vmaf:.2f}, target: {original_target:.2f})")
-        
-        if not is_reliable:
-            print("Warning: Could not find a CQ value that meets the target VMAF.")
-    
-    return best_cq, best_vmaf, is_reliable
-
 
 
 # Example usage
 if __name__ == "__main__":
     cwd = os.getcwd()
-    path = os.path.join(cwd, 'src', 'data')
-    input_file = os.path.join(path, 'merged_results.csv')
-    output_file = os.path.join(path, 'preprocessed_data.csv')
-    pipeline_file = os.path.join(path, 'preprocessing_pipeline.pkl')
+    path = os.path.join(cwd, 'src')
+    input_file = os.path.join(path,'data', 'merged_results.csv')
+    output_file = os.path.join(path,'data', 'preprocessed_data.csv')
+    pipeline_file = os.path.join(path,'model', 'preprocessing_pipeline.pkl')
     
     # Create and fit the pipeline, save preprocessed data and pipeline
     pipeline, X_train, y_train = create_preprocessing_pipeline(

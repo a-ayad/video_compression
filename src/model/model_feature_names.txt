@@ -1,4 +1,4 @@
-vmaf
+cq
 metrics_avg_motion
 metrics_avg_edge_density
 metrics_avg_texture
@@ -8,4 +8,4 @@ metrics_avg_color_complexity
 metrics_avg_motion_variance
 metrics_avg_grain_noise
 resolution_ordinal
-metrics_frame_rate_ordinal
+metrics_frame_rate_numeric

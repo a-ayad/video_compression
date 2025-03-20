@@ -1,0 +1,2 @@
+video_name,cq,vmaf,output_size,bitrate,metrics_avg_motion,metrics_avg_edge_density,metrics_avg_texture,metrics_avg_temporal_information,metrics_avg_spatial_information,metrics_avg_color_complexity,metrics_scene_change_count,metrics_avg_motion_variance,metrics_avg_grain_noise,metrics_frame_rate,metrics_resolution
+720p50_mobcal_ter_segment_000.mp4,42,94.41,1.22776126861572,0.0005,1.16,0.12,6.99,16.98,100.89,6.94,0,0.8,9.31,50,"(1280, 720)"

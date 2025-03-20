@@ -103,11 +103,8 @@ def load_and_prepare_data(file_path='src/data/preprocessed_data.csv'):
     # Scale the features that aren't already scaled
     # Note: Our preprocessing already scaled the features, so this might be redundant
     # But keeping it for consistency and in case there are any unscaled features
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
     
-    return X_train_scaled, X_test_scaled, y_train, y_test, scaler, feature_names
+    return X_train, X_test, y_train, y_test, feature_names
 
 def build_vmaf_prediction_model(input_dim):
     """Build and compile a neural network model for VMAF prediction"""
@@ -286,7 +283,7 @@ def plot_vmaf_results(history, y_test, y_pred, cq_values=None):
         plt.savefig('vmaf_vs_cq.png')
         plt.close()
 
-def create_vmaf_prediction_function(model, scaler, feature_names, vmaf_scaler=None):
+def create_vmaf_prediction_function(model, feature_names, vmaf_scaler=None):
     """Create a function for predicting VMAF on new data"""
     def predict_vmaf(video_features, cq_value=None):
         """
@@ -324,7 +321,7 @@ def create_vmaf_prediction_function(model, scaler, feature_names, vmaf_scaler=No
         features_df = features_df[feature_names]
         
         # Scale features
-        features_scaled = scaler.transform(features_df)
+        features_scaled = vmaf_scaler.transform(features_df)
         
         # Make prediction
         vmaf_prediction = model.predict(features_scaled, verbose=0).flatten()[0]
@@ -464,13 +461,13 @@ def main():
     """Main function to execute the VMAF prediction pipeline"""
     try:
         # Load and prepare data
-        X_train, X_test, y_train, y_test, scaler, feature_names = load_and_prepare_data()
+        X_train, X_test, y_train, y_test, feature_names = load_and_prepare_data()
         
         # Extract CQ values for visualization
         cq_values = None
         X_test_df = pd.DataFrame(X_test)
-        if 'cq_numeric' in X_test_df.columns:
-            cq_values = X_test_df['cq_numeric'].values
+        if 'cq' in X_test_df.columns:
+            cq_values = X_test_df['cq'].values
         
         # Build model
         input_dim = X_train.shape[1]
@@ -480,7 +477,7 @@ def main():
         model, history = train_model(model, X_train, y_train, X_test, y_test)
         
         cwd = os.getcwd()
-        path = os.path.join(cwd, 'src', 'data')
+        path = os.path.join(cwd, 'src', 'model')
         # Get the VMAF scaler from your saved preprocessing pipeline
         vmaf_scaler = get_vmaf_scaler_from_pipeline(os.path.join(path, 'preprocessing_pipeline.pkl'))
 
@@ -520,21 +517,16 @@ def main():
         
         # Save model and artifacts
         try:
-            model.save('vmaf_prediction_model.keras')
+            model.save(os.path.join(path,'vmaf_prediction_model.keras'))
             print("Saved model to 'vmaf_prediction_model.keras'")
             
-            # Save scaler
-            with open('vmaf_model_scaler.pkl', 'wb') as f:
-                pickle.dump(scaler, f)
-            print("Saved scaler to 'vmaf_model_scaler.pkl'")
-            
             # Save feature names
-            with open('vmaf_feature_names.txt', 'w') as f:
+            with open(os.path.join(path,'model_feature_names.txt'), 'w') as f:
                 f.write('\n'.join(feature_names))
             print("Saved feature names to 'vmaf_feature_names.txt'")
             
             # Create prediction function
-            predict_vmaf = create_vmaf_prediction_function(model, scaler, feature_names, vmaf_scaler)
+            predict_vmaf = create_vmaf_prediction_function(model, feature_names, vmaf_scaler)
             
             # Demonstrate finding optimal CQ for a target VMAF
             print("\nDemonstration: Finding optimal CQ for target VMAF")
