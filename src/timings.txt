@@ -1,0 +1,39 @@
+Total Timings (Seconds)
+1. optical_flow: 25.6695
+2. motion_variance: 23.6467
+3. spatial_info: 1.0328
+4. color_complexity: 0.7466
+5. edge_density: 0.3808
+6. grain_noise: 0.3312
+7. texture: 0.3111
+8. temporal_info: 0.3016
+9. scene_change: 0.0777
+10. saliency: 0.0061
+
+
+Timings Per Frame
+1. optical_flow: 0.05093
+2. motion_variance: 0.04692
+3. spatial_info: 0.00205
+4. color_complexity: 0.00148
+5. edge_density: 0.00076
+6. grain_noise: 0.00066
+7. texture: 0.00062
+8. temporal_info: 0.00060
+9. scene_change: 0.00015
+10. saliency: 0.00001
+
+
+Feature Importance:
+
+1. cq: 38.06%
+2. metrics_avg_edge_density: 32.11%
+3. metrics_avg_spatial_information: 6.63%
+4. metrics_resolution: 4.77%
+5. metrics_avg_grain_noise: 2.76%
+6. metrics_avg_texture: 2.60%
+7. metrics_avg_temporal_information: 2.39%
+8. metrics_avg_motion: 1.67%
+9. metrics_avg_motion_variance: 1.60%
+10. metrics_frame_rate: 0.82%
+11. metrics_avg_color_complexity: 0.62%

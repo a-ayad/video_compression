@@ -7,12 +7,21 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import os
 import pickle
 from sklearn.inspection import permutation_importance
 import sys
+# Prevent TensorFlow from using GPU
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+# Disable TensorFlow logging
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # 0=all, 1=INFO, 2=WARNING, 3=ERROR
+# Suppress additional TensorFlow warnings
+tf.get_logger().setLevel('ERROR')
+
+
+
 # Add the train_tools directory to the path so we can import from it
 sys.path.insert(0, os.path.join(os.getcwd(), 'src', 'train_tools'))
 
@@ -30,7 +39,7 @@ from preprocessing import (
 np.random.seed(42)
 tf.random.set_seed(42)
 
-def get_vmaf_scaler_from_pipeline(pipeline_path='src/data/preprocessing_pipeline.pkl'):
+def get_vmaf_scaler_from_pipeline(pipeline_path='src/model/preprocessing_pipeline.pkl'):
     """
     Extract the VMAF scaler from the saved preprocessing pipeline.
     
@@ -109,7 +118,8 @@ def load_and_prepare_data(file_path='src/data/preprocessed_data.csv'):
 def build_vmaf_prediction_model(input_dim):
     """Build and compile a neural network model for VMAF prediction"""
     model = Sequential([
-        Dense(64, activation='relu', input_dim=input_dim),
+        Input(shape=(input_dim,)),
+        Dense(64, activation='relu'),
         Dropout(0.3),
         Dense(32, activation='relu'),
         Dropout(0.2),
@@ -147,7 +157,7 @@ def train_model(model, X_train, y_train, X_test, y_test):
     history = model.fit(
         X_train, y_train,
         epochs=150,
-        batch_size=32,
+        batch_size=16,
         validation_data=(X_test, y_test),
         callbacks=[early_stopping, model_checkpoint],
         verbose=1
@@ -305,7 +315,7 @@ def create_vmaf_prediction_function(model, feature_names, vmaf_scaler=None):
         if isinstance(video_features, dict):
             # Ensure all required features are present
             for feature in feature_names:
-                if feature not in video_features and feature != 'cq_numeric':
+                if feature not in video_features and feature != 'cq':
                     raise ValueError(f"Missing required feature: {feature}")
             
             # Convert to DataFrame
@@ -314,8 +324,8 @@ def create_vmaf_prediction_function(model, feature_names, vmaf_scaler=None):
             features_df = video_features.copy()
         
         # Override CQ value if provided
-        if cq_value is not None and 'cq_numeric' in feature_names:
-            features_df['cq_numeric'] = cq_value
+        if cq_value is not None and 'cq' in feature_names:
+            features_df['cq'] = cq_value
         
         # Ensure features are in the correct order
         features_df = features_df[feature_names]
@@ -399,7 +409,7 @@ def find_optimal_cq(predict_vmaf_fn, video_features, target_vmaf,
         
         # Convert scaled CQ to original CQ for display
         mid_original = scaled_to_original_cq(mid)
-        
+        print(video_features)
         # Predict VMAF for this CQ
         result = predict_vmaf_fn(video_features, mid)
         predicted_vmaf = result[target_key]
@@ -521,9 +531,9 @@ def main():
             print("Saved model to 'vmaf_prediction_model.keras'")
             
             # Save feature names
-            with open(os.path.join(path,'model_feature_names.txt'), 'w') as f:
+            with open(os.path.join(path,'feature_names.txt'), 'w') as f:
                 f.write('\n'.join(feature_names))
-            print("Saved feature names to 'vmaf_feature_names.txt'")
+            print("Saved feature names to 'feature_names.txt'")
             
             # Create prediction function
             predict_vmaf = create_vmaf_prediction_function(model, feature_names, vmaf_scaler)
@@ -534,7 +544,7 @@ def main():
             # Create sample video features (using middle values for demonstration)
             sample_features = {}
             for feature in feature_names:
-                if feature != 'cq_numeric':  # Skip CQ as we'll vary this
+                if feature != 'cq':  # Skip CQ as we'll vary this
                     sample_features[feature] = 0.5  # Use middle value for demonstration
 
             # Define target VMAF in original scale (not scaled)

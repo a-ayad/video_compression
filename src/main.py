@@ -1,8 +1,4 @@
-from encode_video import encode_video
-from calculate_vmaf import calculate_vmaf
-from split_video_into_scenes import split_video_into_scenes
-from video_metrics import analyze_video
-from get_suggested_rate import lookup_crf
+
 import os
 import re
 import ffmpeg
@@ -10,8 +6,17 @@ import tempfile
 from merge_videos import merge_videos
 import json
 import subprocess
+import sys
 
-def get_frame_rate(video_path):
+# Add the train_tools directory to the path so we can import from it
+sys.path.insert(0, os.path.join(os.getcwd(), 'src', 'train_tools'))
+
+from encode_video import encode_video
+from calculate_vmaf import calculate_vmaf
+from split_video_into_scenes import split_video_into_scenes
+from video_metrics import analyze_video
+
+def get_frame_rate(video_path): #TODO : move to own file
     """
     Returns the average frame rate of the video as a float.
     The rate is extracted from ffprobe's output (e.g., "30000/1001").
@@ -36,8 +41,8 @@ def get_frame_rate(video_path):
     
 
     
-def get_frame_timestamps(video_path, num_frames=50):
-    """
+def get_frame_timestamps(video_path, num_frames=50): #TODO : move to own file
+    """ 
     Attempts to retrieve the presentation timestamps for the first few frames
     of the given video by trying multiple available fields.
     
@@ -60,7 +65,7 @@ def get_frame_timestamps(video_path, num_frames=50):
             return timestamps[:num_frames]
     return []
 
-def get_frame_count(video_path):
+def get_frame_count(video_path): #TODO : move to own file
     """
     Uses FFprobe to get the frame count of a video.
     """
@@ -81,7 +86,7 @@ def get_frame_count(video_path):
     return frame_count
 
 
-def main(input_video_dir,output_video_dir,temp_directory,file_number,codec):
+def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_directory='videos/temp_scenes',codec='AV1_NVENC'):
     # Example usage:
     input_file_full = os.path.join(input_video_dir, f"input_{file_number}.y4m")
     output_file_full = os.path.join(output_video_dir, f"output_{file_number}_{codec.lower()}.mp4")
@@ -153,10 +158,10 @@ def main(input_video_dir,output_video_dir,temp_directory,file_number,codec):
 
            
 if __name__ == "__main__":
-    
-    file_number=1
     input_video_dir= './videos/input_videos'
+    input_file = os.path.join(input_video_dir, f"input_1.y4m")
+    
     output_video_dir= './videos/output_videos'
     temp_directory= './videos/temp_scenes'
     codec = "AV1_NVENC"
-    main(input_video_dir,output_video_dir,temp_directory,file_number,codec)
+    main(input_file,output_video_dir,temp_directory,codec)
