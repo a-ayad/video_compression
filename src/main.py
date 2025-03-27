@@ -14,10 +14,7 @@ sys.path.insert(0, os.path.join(os.getcwd(), 'src', 'train_tools'))
 from encode_video import encode_video
 from calculate_vmaf import calculate_vmaf
 from split_video_into_scenes import split_video_into_scenes
-from get_video_metrics import analyze_video
-from get_suggested_rate_non_ML import lookup_crf
-from find_optimal_cq import find_optimal_cq
-
+from video_metrics import analyze_video
 
 def get_frame_rate(video_path): #TODO : move to own file
     """
@@ -41,6 +38,8 @@ def get_frame_rate(video_path): #TODO : move to own file
             return float(num) / float(den)
     except (KeyError, IndexError, ValueError):
         return None
+    
+
     
 def get_frame_timestamps(video_path, num_frames=50): #TODO : move to own file
     """ 
@@ -87,42 +86,23 @@ def get_frame_count(video_path): #TODO : move to own file
     return frame_count
 
 
-metrics_list = {
-        "metrics_avg_motion",
-        "metrics_avg_edge_density",
-        "metrics_avg_texture",
-        "metrics_avg_temporal_information",
-        "metrics_avg_spatial_information",
-        "metrics_avg_color_complexity",
-        "metrics_scene_change_count",
-        "metrics_avg_motion_variance",
-        "metrics_avg_saliency",
-        "metrics_avg_grain_noise",
-        "metrics_frame_rate",
-        "metrics_resolution",
-    }
-
-
-
-def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_directory='videos/temp_scenes',codec='AV1_NVENC',ai_encoding=True):
-    
-    # define the output file name
-    output_file_full = os.path.join(output_video_dir, f"output_{codec.lower()}.mp4")
-    # encode the full video
-    encoding_results,encoding_time_calculated = encode_video(input_file, output_file_full,codec,rate=30) #check variables
-    # calculate the VMAF for the full video
-    vmaf_full_video= calculate_vmaf(input_file, output_file_full)
-    print(f"VMAF for full video: {vmaf_full_video}")
-    # split the video into scenes  
-    scene_files= split_video_into_scenes(input_file,temp_directory)
+def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_directory='videos/temp_scenes',codec='AV1_NVENC'):
+    # Example usage:
+    input_file_full = os.path.join(input_video_dir, f"input_{file_number}.y4m")
+    output_file_full = os.path.join(output_video_dir, f"output_{file_number}_{codec.lower()}.mp4")
+    encoding_results,encoding_time_calculated = encode_video(input_file_full, output_file_full,codec,rate=30)
+    vmaf_full_video= calculate_vmaf(input_file_full, output_file_full)
+    print(f"VMAF for full video: {vmaf_full_video}")   
+    scene_files= split_video_into_scenes(input_file_full,temp_directory)
     scene_videos    =   []
     scenes_vmaf=[]
-    
-    #Go over the list of scene files and encode each one
+    #rates=[32,42,42]
+    rates=[32,28,36]
+    counter=0
     for file_name in os.listdir(temp_directory):
-        # Check if the file is a scene file
         if file_name.startswith(f"scene") and file_name.endswith(".mp4"):
             input_scene = os.path.join(temp_directory, file_name)
+            
             match = re.search(r"scene_(\d+)\.mp4", file_name) 
             if match:
                 scene_number= int(match.group(1))
@@ -130,22 +110,13 @@ def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_di
                 print("Scene number not found in the file name.")
                 scene_number= 1
             output_scene = os.path.join(temp_directory, f"output_scene_{scene_number}_{codec.lower()}.mp4")
-            # get the file size of the input scene
             file_size_input = os.path.getsize(input_scene) / (1024 * 1024)
+            #print("Input scene size: ", round(file_size_input, 2), "MB")
             # Extract file number from file name (assumes format input_XX.y4m)
-            video_metrics = analyze_video(input_scene, max_frames=150, scale_factor=0.5)
-
-            if ai_encoding == True:
-                suggested_crf = lookup_crf(video_metrics)
-            else:
-                avg_motion, avg_edge_density, avg_texture = video_metrics['metrics_avg_motion'],
-                video_metrics['metrics_avg_edge_density'], video_metrics['metrics_avg_texture']
-                suggested_crf = lookup_crf(avg_motion, avg_edge_density, avg_texture)
-            print(f"Optimal CQ for scene {file_name}", suggested_crf)
-
-            # encode the scene using the calculated optimal rate
-            encode_video(input_scene, output_scene,codec)
-            # calculate VMAF for the scene
+            avg_motion, avg_edge_density, avg_texture = analyze_video(input_scene, max_frames=150, scale_factor=0.5)
+            suggested_crf = lookup_crf(avg_motion, avg_edge_density, avg_texture)
+            print(f"Suggested CQ for scene {file_name}", suggested_crf)
+            encode_video(input_scene, output_scene,codec,rates[counter])
             scene_vmaf= calculate_vmaf(input_scene, output_scene) 
             print(f"VMAF for scene {file_name}: {scene_vmaf}")
             scenes_vmaf.append(scene_vmaf)
@@ -156,25 +127,24 @@ def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_di
             print(f"Skipping file: {file_name}")
     try:
         #print("Scene videos: ", scene_videos) 
-        output_file_concat = os.path.join(output_video_dir, f"output_concat_{codec.lower()}.mp4")
+        output_file_concat = os.path.join(output_video_dir, f"output_{file_number}_concat_{codec.lower()}.mp4")
         merge_videos(scene_videos, output_file_concat)
         print("scenes vmaf: ", scenes_vmaf)
         #print("scenes duration: ", scenes_duration)
         #full_vmaf_weighted_sum=calculate_weighted_average_vmaf(scenes_duration, scenes_vmaf)
-        full_vmaf= calculate_vmaf(input_file, output_file_concat)
+        full_vmaf= calculate_vmaf(input_file_full, output_file_concat)
         print(f"VMAF for full video: {vmaf_full_video}")  
         print(f"VMAF for concatenated video: {full_vmaf}")
-        # check frame counts on the original and merged video
-        original_frames = get_frame_count(input_file)
+        #print(f"VMAF for concatenated video (weighted average): {full_vmaf_weighted_sum}")
+        # Optionally, check frame counts on the original and merged video
+        original_frames = get_frame_count(input_file_full)
         merged_frames = get_frame_count(output_file_concat)
         print(f"Original video frame count: {original_frames}")
         print(f"Merged video frame count:   {merged_frames}")
-        # check frame rates on the original and merged video
-        orig_rate = get_frame_rate(input_file)
+        orig_rate = get_frame_rate(input_file_full)
         merged_rate = get_frame_rate(output_file_concat)
         print("Original video frame rate: ", orig_rate)
         print("Merged video frame rate:   ", merged_rate)
-        #Optional: check timestamps on the original and merged video
         #orig_timestamps = get_frame_timestamps(input_file_full)
         #merged_timestamps = get_frame_timestamps(output_file_concat)
         #print("Original timestamps: ", orig_timestamps)
@@ -190,7 +160,8 @@ def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_di
 if __name__ == "__main__":
     input_video_dir= './videos/input_videos'
     input_file = os.path.join(input_video_dir, f"input_1.y4m")
+    
     output_video_dir= './videos/output_videos'
     temp_directory= './videos/temp_scenes'
     codec = "AV1_NVENC"
-    enhanced_encoding(input_file,output_video_dir,temp_directory,codec)
+    main(input_file,output_video_dir,temp_directory,codec)
