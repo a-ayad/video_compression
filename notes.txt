@@ -1,0 +1,36 @@
+['metrics_avg_motion', 'metrics_avg_edge_density', 'metrics_avg_texture', 'metrics_avg_temporal_information',
+ 'metrics_avg_spatial_information', 'metrics_avg_color_complexity',
+ 'metrics_avg_motion_variance', 'metrics_avg_grain_noise', 'metrics_resolution',
+ 'metrics_frame_rate', 'cq_numeric']
+
+
+{'column_dropper': ColumnDropper(columns_to_drop=['metrics_scene_change_count', 'video_name',
+                               'output_size', 'bitrate']),
+
+ 'resolution_transformer': ResolutionTransformer(),
+
+ 'frame_rate_transformer': NumericFeatureTransformer(feature_name='metrics_frame_rate',
+                          output_column='metrics_frame_rate_numeric'),
+
+ 'cq_transformer': NumericFeatureTransformer(feature_name='cq', output_column='cq_numeric'),
+
+ 'vmaf_scaler': VMAFScaler(),
+
+ 'feature_scaler': FeatureScaler(columns_to_scale=['cq_numeric', 'metrics_frame_rate_numeric',
+                                'resolution_ordinal', 'metrics_avg_motion',
+                                'metrics_avg_edge_density',
+                                'metrics_avg_texture',
+                                'metrics_avg_temporal_information',
+                                'metrics_avg_spatial_information',
+                                'metrics_avg_color_complexity',
+                                'metrics_avg_motion_variance',
+                                'metrics_avg_grain_noise'],
+              excluded_columns=['vmaf']), 'target_extractor': TargetExtractor(vmaf_scaler=VMAFScaler())}
+
+
+
+ video_name  cq   vmaf  output_size  bitrate  metrics_avg_motion  ...  metrics_avg_color_complexity  metrics_scene_change_count  metrics_avg_motion_variance  metrics_avg_grain_noise  metrics_frame_rate  metrics_resolution
+0  720p50_mobcal_ter_segment_000.mp4  42  94.41      0.0005                1.16  ...                          6.94                           0                          0.8                     9.31                  50         (1280, 720)
+
+ cq      vmaf  metrics_avg_motion  metrics_avg_edge_density  metrics_avg_texture  ...  metrics_avg_color_complexity  metrics_avg_motion_variance  metrics_avg_grain_noise  resolution_ordinal  metrics_frame_rate_numeric
+0  0.666667  0.926813            0.187702                       0.4             0.885599  ...                       0.90069                     0.073585                 0.355902               0.625                    0.777778
