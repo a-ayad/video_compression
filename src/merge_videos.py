@@ -24,6 +24,8 @@ def has_audio(video_path):
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     return bool(result.stdout.strip())
 
+
+
 def merge_videos(scene_videos, output_video):
     """
     Merge the list of re-encoded scene files using FFmpeg's concat filter.
@@ -34,15 +36,30 @@ def merge_videos(scene_videos, output_video):
         scene_files (list): List of file paths to the scene videos.
         output_video (str): Path to the final merged video.
     """
+    """
      # Create a temporary file listing the input files
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as f:
         for video in scene_videos:
             # Ensure that the file paths are absolute
             f.write(f"file '{os.path.abspath(video)}'\n")
         concat_file = f.name
+    """
+    # Create a temporary file with the correct format
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as f:
+        for video in scene_videos:
+            # Write each file on a separate line with proper syntax
+            f.write(f"file '{os.path.abspath(video)}'\n")
+        concat_file = f.name
     
-    # Use the concat demuxer to merge videos without re-encoding
-    ffmpeg.input(concat_file, format='concat', safe=0).output(output_video, c='copy').run(overwrite_output=True)
-    print(f"Successfully merged videos (without re-encoding) into '{output_video}'")
-
+    # Use the concat demuxer with the file list
+    try:
+        cmd = [
+            'ffmpeg', '-y', '-f', 'concat', '-safe', '0', 
+            '-i', concat_file, '-c', 'copy', output_video
+        ]
+        subprocess.run(cmd, check=True, capture_output=True)
+        print(f"Successfully merged videos into {output_video}")
+    finally:
+        # Clean up temp file
+        os.unlink(concat_file)
  

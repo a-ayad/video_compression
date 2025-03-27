@@ -47,8 +47,9 @@ def reencode_scene(video_path, start_time, end_time, output_path):
         # Process video only.
         out = ffmpeg.output(
             stream.video, output_path,
-            vcodec='libx264', crf=0, preset='fast'
+            vcodec='hevc_nvenc', cq=20, preset='fast'
         )
+
     out.overwrite_output().run()
     print(f"Re-encoded scene: {output_path}")
 
@@ -66,6 +67,7 @@ def split_video_into_scenes(video_path, temp_dir='./videos/temp_scenes'):
         list: Paths to the re-encoded scene files.
     """
     scene_boundaries = detect(video_path, AdaptiveDetector())
+    print(f"Detected {len(scene_boundaries)} scenes.")
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
     scene_files = []

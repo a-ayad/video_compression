@@ -225,7 +225,11 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
     cap.release()
     # End timing
     total_time = time.time() - total_start_time
+<<<<<<< HEAD
     print(timing_data)
+=======
+    
+>>>>>>> recovered-files
     # Calculate average time per frame for each metric
     for key in timing_data:
         timing_data[key] = timing_data[key] / frame_count
@@ -246,19 +250,24 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
         "metrics_resolution": resolution
     }
 
+<<<<<<< HEAD
     print(total_time)
     print(timing_data)
     
+=======
+   
+>>>>>>> recovered-files
 
     return results
 
 if __name__ == "__main__":
-    video_path = './videos/input_videos/720p50_mobcal_ter.y4m'
+    video_path = './videos/temp_scenes/scene_000.mp4'
     metrics = analyze_video(video_path, max_frames=1000, scale_factor=0.5)
-    if metrics:
-        print("Video Metrics:")
+    """
+    if metrics:        
         for key, value in metrics.items():
             if isinstance(value, tuple):
                 print(f"{key}: {value[0]}x{value[1]}")
             else:
-                print(f"{key}: {value:.3f}")
+                print(f"{key}: {value:.3f}")"
+    """
