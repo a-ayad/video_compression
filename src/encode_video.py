@@ -41,6 +41,7 @@ ENCODER_SETTINGS = {
                    # Rate control mode: 'vbr' indicates variable bitrate encoding
         "cq": 22,                 # Constant quantizer value for NVENC; lower values mean better quality (similar in purpose to CRF) 0-51
         "keyint": 50,
+        'pix_fmt': 'yuv420p'  # Force 8-bit pixel format
         
     },
     "AV1_Rust": {
@@ -79,7 +80,9 @@ ENCODER_SETTINGS = {
     "HEVC_NVENC": {
         "codec": "hevc_nvenc",    # Nvidia hardware encoder for HEVC
         "preset": "p4",           # NVENC preset for HEVC
-        "rc": "vbr",              # Use variable bitrate encoding
+        "rc": "vbr",
+        "maxrate": "8M",  # Maximum bitrate (8 Mbps in this example)
+        "bufsize": "16M", # Buffer size (typically 2x maxrate)# Use variable bitrate encoding
         "cq": 22,                 # Constant quantizer for HEVC NVENC; adjust based on quality needs
         "keyint": 50,             # Keyframe interval
     },
@@ -136,7 +139,8 @@ def encode_video(input_file, output_file,codec,rate=None,max_bit_rate=None,prese
             output_args["cpu-used"] = settings["cpu-used"]
         if settings.get("tile_columns") is not None:
             output_args["tile-columns"] = settings["tile_columns"]
-    
+        if settings.get("pix_fmt") is not None:
+            output_args["pix_fmt"] = settings["pix_fmt"]
     # Copy audio by default (or you can customize this too)
         #cmd.extend(["-c:a", "copy", output_file])
         print("Output args: ", output_args)
@@ -170,6 +174,7 @@ def encode_video(input_file, output_file,codec,rate=None,max_bit_rate=None,prese
         return encoding_results, encoding_time_calculated
     except ffmpeg.Error as e:
         print(f"Error encoding with {settings['codec']}: {e}")
+        print(f"FFmpeg stderr: {e.stderr.decode('utf8')}")
         return None, None
                 
 

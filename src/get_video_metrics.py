@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import time
+
 
 def compute_optical_flow_metric(prev_gray, curr_gray):
     flow = cv2.calcOpticalFlowFarneback(
@@ -121,6 +123,10 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
       - Frame Rate
       - Resolution
     """
+    timing_data = {}
+    total_start_time = time.time()
+    
+
     cap = cv2.VideoCapture(video_path)
     ret, prev_frame = cap.read()
     if not ret:
@@ -160,62 +166,98 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
             frame = cv2.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LINEAR)
         curr_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Existing metrics.
+        # Measure each metric calculation
+        start = time.time()
         motion = compute_optical_flow_metric(prev_gray, curr_gray)
+        timing_data['optical_flow'] = timing_data.get('optical_flow', 0) + (time.time() - start)
         motion_metrics.append(motion)
+
+        start = time.time()
         density = compute_edge_density(curr_gray)
+        timing_data['edge_density'] = timing_data.get('edge_density', 0) + (time.time() - start)
         edge_densities.append(density)
+
+        start = time.time()
         texture = compute_texture_complexity(curr_gray)
+        timing_data['texture'] = timing_data.get('texture', 0) + (time.time() - start)
         texture_complexities.append(texture)
 
         # Additional metrics.
+        start = time.time()
         ti = compute_temporal_information(prev_gray, curr_gray)
+        timing_data['temporal_info'] = timing_data.get('temporal_info', 0) + (time.time() - start)
         temporal_infos.append(ti)
+
+        start = time.time()
         si = compute_spatial_information(curr_gray)
+        timing_data['spatial_info'] = timing_data.get('spatial_info', 0) + (time.time() - start)
         spatial_infos.append(si)
+
+        start = time.time()
         cc = compute_color_complexity(frame)
+        timing_data['color_complexity'] = timing_data.get('color_complexity', 0) + (time.time() - start)
         color_complexities.append(cc)
+
+        start = time.time()
         mv = compute_motion_variance(prev_gray, curr_gray)
+        timing_data['motion_variance'] = timing_data.get('motion_variance', 0) + (time.time() - start)
         motion_variances.append(mv)
+
+        start = time.time()
         saliency_val = compute_saliency_metric(frame)
+        timing_data['saliency'] = timing_data.get('saliency', 0) + (time.time() - start)
         saliency_metrics.append(saliency_val)
+
+        start = time.time()
         grain_noise = compute_grain_noise_level(curr_gray)
+        timing_data['grain_noise'] = timing_data.get('grain_noise', 0) + (time.time() - start)
         grain_noise_levels.append(grain_noise)
 
+
         # Scene change detection.
+        start = time.time()
         if is_scene_change(prev_gray, curr_gray, threshold=30):
             scene_change_count += 1
-
+        timing_data['scene_change'] = timing_data.get('scene_change', 0) + (time.time() - start)
         prev_gray = curr_gray
         frame_count += 1
 
     cap.release()
-
+    # End timing
+    total_time = time.time() - total_start_time
+    
+    # Calculate average time per frame for each metric
+    for key in timing_data:
+        timing_data[key] = timing_data[key] / frame_count
+    
     # Compute averages for each metric.
     results = {
-        "avg_motion": np.mean(motion_metrics) if motion_metrics else 0,
-        "avg_edge_density": np.mean(edge_densities) if edge_densities else 0,
-        "avg_texture": np.mean(texture_complexities) if texture_complexities else 0,
-        "avg_temporal_information": np.mean(temporal_infos) if temporal_infos else 0,
-        "avg_spatial_information": np.mean(spatial_infos) if spatial_infos else 0,
-        "avg_color_complexity": np.mean(color_complexities) if color_complexities else 0,
-        "scene_change_count": scene_change_count,
-        "avg_motion_variance": np.mean(motion_variances) if motion_variances else 0,
-        "avg_saliency": np.mean(saliency_metrics) if saliency_metrics else 0,
-        "avg_grain_noise": np.mean(grain_noise_levels) if grain_noise_levels else 0,
-        "frame_rate": frame_rate,
-        "resolution": resolution
+        "metrics_avg_motion": np.mean(motion_metrics) if motion_metrics else 0,
+        "metrics_avg_edge_density": np.mean(edge_densities) if edge_densities else 0,
+        "metrics_avg_texture": np.mean(texture_complexities) if texture_complexities else 0,
+        "metrics_avg_temporal_information": np.mean(temporal_infos) if temporal_infos else 0,
+        "metrics_avg_spatial_information": np.mean(spatial_infos) if spatial_infos else 0,
+        "metrics_avg_color_complexity": np.mean(color_complexities) if color_complexities else 0,
+        "metrics_scene_change_count": scene_change_count,
+        "metrics_avg_motion_variance": np.mean(motion_variances) if motion_variances else 0,
+        "metrics_avg_saliency": np.mean(saliency_metrics) if saliency_metrics else 0,
+        "metrics_avg_grain_noise": np.mean(grain_noise_levels) if grain_noise_levels else 0,
+        "metrics_frame_rate": frame_rate,
+        "metrics_resolution": resolution
     }
+
+   
 
     return results
 
 if __name__ == "__main__":
-    video_path = './videos/input_videos/720p50_mobcal_ter.y4m'
+    video_path = './videos/temp_scenes/scene_000.mp4'
     metrics = analyze_video(video_path, max_frames=1000, scale_factor=0.5)
-    if metrics:
-        print("Video Metrics:")
+    """
+    if metrics:        
         for key, value in metrics.items():
             if isinstance(value, tuple):
                 print(f"{key}: {value[0]}x{value[1]}")
             else:
-                print(f"{key}: {value:.3f}")
+                print(f"{key}: {value:.3f}")"
+    """

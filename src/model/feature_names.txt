@@ -7,5 +7,5 @@ metrics_avg_spatial_information
 metrics_avg_color_complexity
 metrics_avg_motion_variance
 metrics_avg_grain_noise
-resolution_ordinal
-metrics_frame_rate_numeric
+metrics_frame_rate
+metrics_resolution

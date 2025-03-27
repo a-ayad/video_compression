@@ -5,14 +5,15 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.models import load_model
 import os
 import pickle
 from sklearn.inspection import permutation_importance
 import sys
+import tensorflow as tf
+# disable eager execution because we are using a saved model
+tf.compat.v1.disable_eager_execution()
+
 # Add the train_tools directory to the path so we can import from it
 sys.path.insert(0, os.path.join(os.getcwd(), 'src', 'train_tools'))
 
@@ -243,14 +244,11 @@ def main():
     print("model loaded")  
 
     # Load feature names"
-    with open(os.path.join(path,'input_feature_names.txt'), 'r') as f:
-        input_feature_names = [line.strip() for line in f]
-    print("input feature names loaded")
-    
+   
     # Load model input feature names"
-    with open(os.path.join(path,'model_feature_names.txt'), 'r') as f:
-        model_feature_names = [line.strip() for line in f]
-    print("model feature names loaded")
+    with open(os.path.join(path,'feature_names.txt'), 'r') as f:
+        feature_names = [line.strip() for line in f]
+    print("feature names loaded")
 
     # Get the VMAF scaler from your saved preprocessing pipeline
     vmaf_scaler,scaler = get_scalers_from_pipeline(os.path.join(path, 'preprocessing_pipeline.pkl'))
@@ -269,7 +267,7 @@ def main():
     
     
     # Ensure all required features are present
-    for feature in input_feature_names:
+    for feature in feature_names:
         if feature not in test_file.columns.tolist() and feature != 'cq':
             raise ValueError(f"Missing required feature: {feature}")
             
@@ -286,7 +284,7 @@ def main():
     target_extractor = scaler.named_steps['target_extractor']
     y_train = target_extractor.get_target(features_df)
     vmaf_value=(features_df['vmaf'] - vmaf_scaler.min_val) / (vmaf_scaler.max_val - vmaf_scaler.min_val)
-    features_scaled = features_scaled[model_feature_names]
+    features_scaled = features_scaled[feature_names]
     
     
     # Make prediction

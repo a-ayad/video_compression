@@ -2,7 +2,6 @@ from ffmpeg_quality_metrics import FfmpegQualityMetrics
 
 
 
-
 def calculate_vmaf(input_file, encoded_file):
     """
     Calculates the VMAF and other quality metrics using ffmpeg-quality-metrics.
