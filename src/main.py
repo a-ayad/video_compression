@@ -7,17 +7,6 @@ from merge_videos import merge_videos
 import json
 import subprocess
 import sys
-<<<<<<< HEAD
-
-# Add the train_tools directory to the path so we can import from it
-sys.path.insert(0, os.path.join(os.getcwd(), 'src', 'train_tools'))
-
-from encode_video import encode_video
-from calculate_vmaf import calculate_vmaf
-from split_video_into_scenes import split_video_into_scenes
-from video_metrics import analyze_video
-
-=======
 import pandas as pd
 # Add the correct paths to import from
 sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
@@ -32,7 +21,7 @@ from find_optimal_cq import find_optimal_cq
 
 # Import the required classes from the original module
 
-from preprocessing import (
+from train_tools.preprocessing import (
     ColumnDropper, 
     VMAFScaler, 
     ResolutionTransformer, 
@@ -76,7 +65,6 @@ def check_scene_sequence_complete(scene_files, max_scene_gap=1):
             return False
             
     return True
->>>>>>> recovered-files
 def get_frame_rate(video_path): #TODO : move to own file
     """
     Returns the average frame rate of the video as a float.
@@ -100,11 +88,6 @@ def get_frame_rate(video_path): #TODO : move to own file
     except (KeyError, IndexError, ValueError):
         return None
     
-<<<<<<< HEAD
-
-    
-=======
->>>>>>> recovered-files
 def get_frame_timestamps(video_path, num_frames=50): #TODO : move to own file
     """ 
     Attempts to retrieve the presentation timestamps for the first few frames
@@ -264,17 +247,6 @@ def enhanced_encoding(input_file,output_video_dir='videos/output_videos',
         print("Scene sequence incomplete or missing, performing scene detection")
         scene_files = split_video_into_scenes(input_file, temp_directory)
 
-<<<<<<< HEAD
-def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_directory='videos/temp_scenes',codec='AV1_NVENC'):
-    # Example usage:
-    input_file_full = os.path.join(input_video_dir, f"input_{file_number}.y4m")
-    output_file_full = os.path.join(output_video_dir, f"output_{file_number}_{codec.lower()}.mp4")
-    encoding_results,encoding_time_calculated = encode_video(input_file_full, output_file_full,codec,rate=30)
-    vmaf_full_video= calculate_vmaf(input_file_full, output_file_full)
-    print(f"VMAF for full video: {vmaf_full_video}")   
-    scene_files= split_video_into_scenes(input_file_full,temp_directory)
-=======
->>>>>>> recovered-files
     scene_videos    =   []
     scenes_vmaf=[]
 
@@ -384,17 +356,8 @@ def enhanced_encoding(input_file,output_video_dir='videos/output_videos',temp_di
            
 if __name__ == "__main__":
     input_video_dir= './videos/input_videos'
-<<<<<<< HEAD
-    input_file = os.path.join(input_video_dir, f"input_1.y4m")
-    
-    output_video_dir= './videos/output_videos'
-    temp_directory= './videos/temp_scenes'
-    codec = "AV1_NVENC"
-    main(input_file,output_video_dir,temp_directory,codec)
-=======
     input_file = os.path.join(input_video_dir,'combined_videos', f"input_1.y4m")
     output_video_dir= './videos/output_videos'
     temp_directory= './videos/temp_scenes'
-    codec = "HEVC_NVENC"
+    codec = "H264_NVENC"
     enhanced_encoding(input_file,output_video_dir,temp_directory,codec)
->>>>>>> recovered-files

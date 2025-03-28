@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-=======
 import os
 import logging
 import sys
->>>>>>> recovered-files
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,30 +9,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from tensorflow.keras.models import load_model
-<<<<<<< HEAD
-import os
-=======
->>>>>>> recovered-files
 import pickle
 from sklearn.inspection import permutation_importance
 import sys
 import tensorflow as tf
-<<<<<<< HEAD
-# disable eager execution because we are using a saved model
-tf.compat.v1.disable_eager_execution()
-=======
-
->>>>>>> recovered-files
 
 # Add the train_tools directory to the path so we can import from it
 sys.path.insert(0, os.path.join(os.getcwd(), 'src', 'train_tools'))
 
-<<<<<<< HEAD
-=======
-
->>>>>>> recovered-files
 # Import the required classes from the original module
-from preprocessing import (
+from train_tools.preprocessing import (
     ColumnDropper, 
     VMAFScaler, 
     ResolutionTransformer, 
@@ -44,10 +27,6 @@ from preprocessing import (
     TargetExtractor
 )
 
-<<<<<<< HEAD
-
-
-=======
 # They will store the cached objects
 _MODEL = None
 _FEATURE_NAMES = None
@@ -95,7 +74,6 @@ def get_prediction_function():
         _PREDICT_VMAF_FN = create_vmaf_prediction_function(model, vmaf_scaler, _SCALER)
         print("Prediction function created")
     return _PREDICT_VMAF_FN
->>>>>>> recovered-files
 
 def create_vmaf_prediction_function(model, vmaf_scaler=None,scaler=None):
     
@@ -119,11 +97,7 @@ def create_vmaf_prediction_function(model, vmaf_scaler=None,scaler=None):
         """
         # Convert dictionary to DataFrame if needed
         video_features['cq']=cq_value
-<<<<<<< HEAD
-        print(video_features['cq'])
-=======
         
->>>>>>> recovered-files
         vmaf_prediction = model.predict(video_features, verbose=0).flatten()[0]
         
         # Ensure prediction is within valid scaled VMAF range [0, 1]
@@ -143,11 +117,7 @@ def create_vmaf_prediction_function(model, vmaf_scaler=None,scaler=None):
     return predict_vmaf
 
 
-<<<<<<< HEAD
-def find_optimal_cq(predict_vmaf_fn, video_features, target_vmaf, 
-=======
 def search_for_cq(predict_vmaf_fn, video_features, target_vmaf, 
->>>>>>> recovered-files
                    min_cq=0.0, max_cq=1.0, min_cq_original=10, max_cq_original=63,
                    tolerance=0.01, max_iterations=20, is_scaled=True):
     """
@@ -255,10 +225,6 @@ def search_for_cq(predict_vmaf_fn, video_features, target_vmaf,
         'all_tested': all_results
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> recovered-files
 def get_scalers_from_pipeline(pipeline_path='src/data/preprocessing_pipeline.pkl'):
     """
     Extract the VMAF scaler from the saved preprocessing pipeline.
@@ -313,83 +279,6 @@ def get_scalers_from_pipeline(pipeline_path='src/data/preprocessing_pipeline.pkl
     return DefaultVMAFScaler()
 
 
-<<<<<<< HEAD
-def main():
-    """Main function to execute the VMAF prediction pipeline"""
-    cwd = os.getcwd()
-    path = os.path.join(cwd, 'src','model')
-
-    # Load model
-    model = tf.keras.models.load_model(os.path.join(path,'vmaf_prediction_model.keras'))
-    print("model loaded")  
-
-    # Load feature names"
-   
-    # Load model input feature names"
-    with open(os.path.join(path,'feature_names.txt'), 'r') as f:
-        feature_names = [line.strip() for line in f]
-    print("feature names loaded")
-
-    # Get the VMAF scaler from your saved preprocessing pipeline
-    vmaf_scaler,scaler = get_scalers_from_pipeline(os.path.join(path, 'preprocessing_pipeline.pkl'))
-    print("scalers loaded")
-
-    # Create a function to predict VMAF from video features
-    predict_vmaf = create_vmaf_prediction_function(model, vmaf_scaler, scaler)
-    print("predict_vmaf function created")
-
-    # Load test data
-    test_file_path= os.path.join(cwd,'src' ,'data','test.csv')
-    test_file=pd.read_csv(test_file_path)
-    print("Original Test File \n")
-    print(test_file)
-
-    
-    
-    # Ensure all required features are present
-    for feature in feature_names:
-        if feature not in test_file.columns.tolist() and feature != 'cq':
-            raise ValueError(f"Missing required feature: {feature}")
-            
-    
-    features_df = test_file.copy()
-        
-        
-        
-    # Ensure features are in the correct order
-    
-    # Scale features
-    features_scaled = scaler.transform(features_df) 
-    
-    target_extractor = scaler.named_steps['target_extractor']
-    y_train = target_extractor.get_target(features_df)
-    vmaf_value=(features_df['vmaf'] - vmaf_scaler.min_val) / (vmaf_scaler.max_val - vmaf_scaler.min_val)
-    features_scaled = features_scaled[feature_names]
-    
-    
-    # Make prediction
-
-    prediction= model.predict(features_scaled)
-    print(prediction)
-    # Convert scaled predictions back to original VMAF range
-    
-    # Apply inverse scaling formula: original = scaled * (max - min) + min
-    original_vmaf = prediction[0] * (vmaf_scaler.max_val - vmaf_scaler.min_val) + vmaf_scaler.min_val
-        # Ensure prediction is within valid VMAF range [0, 100]
-    original_vmaf = max(0, min(100, original_vmaf))
-    print(original_vmaf)    
-
-
-    # Demonstrate finding optimal CQ for a target VMAF
-    print("Finding optimal CQ for target VMAF")
-    
-
-    # Define target VMAF in original scale (not scaled)
-    target_vmaf_original = 85  # Example: target VMAF of 85 out of 100
-    # Convert to scaled value for the search function
-    target_vmaf_scaled = (target_vmaf_original - vmaf_scaler.min_val) / (vmaf_scaler.max_val - vmaf_scaler.min_val)
-
-=======
 def find_optimal_cq(video_features,target_vmaf_original=85):
     """Main function to execute the VMAF prediction pipeline"""
     # Load cached resources (will only load from disk if not already loaded)
@@ -436,27 +325,14 @@ def find_optimal_cq(video_features,target_vmaf_original=85):
    
     # Convert the given required VMAF to a scaled value for the search function
     target_vmaf_scaled = (target_vmaf_original - vmaf_scaler.min_val) / (vmaf_scaler.max_val - vmaf_scaler.min_val)
->>>>>>> recovered-files
     feature_scaler = scaler.named_steps['feature_scaler']
    
     # Get CQ scaling range
     cq_min = feature_scaler.feature_min['cq']
     cq_max = feature_scaler.feature_max['cq']
 
-<<<<<<< HEAD
-    
-    
-
-
-
-
-    
-    # Find optimal CQ for target VMAF
-    result = find_optimal_cq(predict_vmaf, features_scaled, target_vmaf_scaled, 
-=======
     # Find optimal CQ for target VMAF
     result = search_for_cq(predict_vmaf, features_scaled, target_vmaf_scaled, 
->>>>>>> recovered-files
                                         min_cq=0.0, max_cq=1.0, 
                                         min_cq_original=cq_min, max_cq_original=cq_max)
 
@@ -474,58 +350,6 @@ def find_optimal_cq(video_features,target_vmaf_original=85):
         print(f"  CQ {original_cq:.1f} (scaled: {scaled_cq:.4f}): "f"VMAF {vmaf_original:.1f} (scaled: {vmaf_scaled:.4f})")
     
     # Example of how to use the model for VMAF prediction:
-<<<<<<< HEAD
-    '''   
-        print("\nExample of how to use the model for VMAF prediction:")
-        print("```python")
-        print("import numpy as np")
-        print("import tensorflow as tf")
-        print("import pickle")
-        print("import pandas as pd")
-        print("")
-        
-        print("# Example video features with a specific CQ value")
-        print("video_features = {")
-        for feature in feature_names:
-            if feature != 'cq_numeric':
-                print(f"    '{feature}': 0.5,  # Replace with actual values")
-        print("}")
-        print("")
-        print("# Function to predict VMAF for a given CQ")
-        print("def predict_vmaf_for_cq(features, cq_value):")
-        print("    # Create a copy of features and set CQ")
-        print("    features_copy = features.copy()")
-        print("    features_copy['cq_numeric'] = cq_value")
-        print("")
-        print("    # Create DataFrame with the right feature order")
-        print("    input_df = pd.DataFrame([features_copy])[feature_names]")
-        print("")
-        print("    # Scale input")
-        print("    input_scaled = scaler.transform(input_df)")
-        print("")
-        print("    # Make prediction")
-        print("    vmaf_scaled = model.predict(input_scaled, verbose=0)[0][0]")
-        print("    vmaf_scaled = max(0, min(1, vmaf_scaled))  # Ensure in [0,1] range")
-        print("")
-        print("    # Convert to original VMAF scale")
-        print("    vmaf_original = vmaf_scaled * (vmaf_max - vmaf_min) + vmaf_min")
-        print("")
-        print("    return {")
-        print("        'vmaf_scaled': float(vmaf_scaled),")
-        print("        'vmaf_original': float(vmaf_original)")
-        print("    }")
-        print("")
-        print("# Test different CQ values")
-        print("cq_values = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]")
-        print("for cq in cq_values:")
-        print("    result = predict_vmaf_for_cq(video_features, cq)")
-        print("    print(f\"CQ (scaled): {cq:.2f}, VMAF: {result['vmaf_original']:.2f}\")")
-        print("```")'
-        '''
-# Run the main function if the script is executed directly
-if __name__ == "__main__":
-    main()
-=======
     return int(result['optimal_cq_original'])
 # Run the main function if the script is executed directly
 if __name__ == "__main__":
@@ -543,4 +367,3 @@ if __name__ == "__main__":
         "metrics_resolution":0}
     video_features['cq']=0.5    
     find_optimal_cq(video_features)
->>>>>>> recovered-files

@@ -62,7 +62,8 @@ ENCODER_SETTINGS = {
         "codec": "libx264",       # Software encoder for H.264
         "preset": "medium",       # Determines encoding speed vs. compression efficiency; slower presets improve compression (e.g., "slow")
         "crf": 23,                # Constant Rate Factor: lower value means better quality (range ~18–23 is typical for visually lossless output)
-        "keyint": 50,             # Keyframe interval (in frames); defines how often an I-frame is inserted. Lower values improve seeking but increase file size.
+        "keyint": 50, 
+                    # Keyframe interval (in frames); defines how often an I-frame is inserted. Lower values improve seeking but increase file size.
     },
     "H266_VVC": {
         "codec": "libvvenc",    # Nvidia hardware encoder for H.264
@@ -81,8 +82,17 @@ ENCODER_SETTINGS = {
         "codec": "hevc_nvenc",    # Nvidia hardware encoder for HEVC
         "preset": "p4",           # NVENC preset for HEVC
         "rc": "vbr",
-        "maxrate": "8M",  # Maximum bitrate (8 Mbps in this example)
-        "bufsize": "16M", # Buffer size (typically 2x maxrate)# Use variable bitrate encoding
+        "maxrate": "4M",  # Maximum bitrate (8 Mbps in this example)
+        "bufsize": "8M", # Buffer size (typically 2x maxrate)# Use variable bitrate encoding
+        "cq": 22,                 # Constant quantizer for HEVC NVENC; adjust based on quality needs
+        "keyint": 50,             # Keyframe interval
+    },
+    "H264_NVENC": {
+        "codec": "h264_nvenc",    # Nvidia hardware encoder for HEVC
+        "preset": "p4",           # NVENC preset for HEVC
+        "rc": "vbr",
+        "maxrate": "12M",  # Maximum bitrate (8 Mbps in this example)
+        "bufsize": "24M", # Buffer size (typically 2x maxrate)# Use variable bitrate encoding
         "cq": 22,                 # Constant quantizer for HEVC NVENC; adjust based on quality needs
         "keyint": 50,             # Keyframe interval
     },
@@ -141,6 +151,10 @@ def encode_video(input_file, output_file,codec,rate=None,max_bit_rate=None,prese
             output_args["tile-columns"] = settings["tile_columns"]
         if settings.get("pix_fmt") is not None:
             output_args["pix_fmt"] = settings["pix_fmt"]
+        if settings.get("maxrate") is not None:
+            output_args["maxrate"] = settings["maxrate"]
+        if settings.get("bufsize") is not None:
+            output_args["bufsize"] = settings["bufsize"]
     # Copy audio by default (or you can customize this too)
         #cmd.extend(["-c:a", "copy", output_file])
         print("Output args: ", output_args)

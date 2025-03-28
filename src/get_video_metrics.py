@@ -225,11 +225,7 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
     cap.release()
     # End timing
     total_time = time.time() - total_start_time
-<<<<<<< HEAD
-    print(timing_data)
-=======
     
->>>>>>> recovered-files
     # Calculate average time per frame for each metric
     for key in timing_data:
         timing_data[key] = timing_data[key] / frame_count
@@ -250,13 +246,7 @@ def analyze_video(video_path, max_frames=100, scale_factor=0.5):
         "metrics_resolution": resolution
     }
 
-<<<<<<< HEAD
-    print(total_time)
-    print(timing_data)
-    
-=======
    
->>>>>>> recovered-files
 
     return results
 
