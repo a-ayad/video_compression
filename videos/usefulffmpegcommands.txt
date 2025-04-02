@@ -1,0 +1,4 @@
+ffmpeg -i input_6.y4m        check videodata
+ffmpeg -safe 0 -f concat -i list.txt -c copy output.y4m        combine videos
+ffmpeg -hide_banner -h encoder=h264_nvenc   get encoders availible paramters
+ffmpeg -h encoder=av1_nvenc

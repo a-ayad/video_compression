@@ -166,7 +166,7 @@ def validate_video_files(scene_videos):
 
 def enhanced_encoding(input_file,output_video_dir='videos/output_videos',
                       temp_directory='videos/temp_scenes',
-                      codec='AV1_NVENC',ai_encoding=True, calculate_vmaf_flag=False,optimized_vmaf_flag=False):
+                      codec='AV1_NVENC',ai_encoding=True, calculate_vmaf_flag=True,optimized_vmaf_flag=True):
     """
     Enhanced video encoding with optional VMAF calculation
     
@@ -405,7 +405,8 @@ if __name__ == "__main__":
 
     # Record start time before calling enhanced_encoding
     start_time = time.time()
-    enhanced_encoding(input_file,output_video_dir,temp_directory,codec)
+    enhanced_encoding(input_file,output_video_dir,temp_directory,codec,
+                      ai_encoding=True, calculate_vmaf_flag=True,optimized_vmaf_flag=True)
     # After function execution, we'll get the elapsed time
     execution_time = time.time() - start_time
     print(f"Enhanced encoding completed in {execution_time:.2f} seconds")

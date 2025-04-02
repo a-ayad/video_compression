@@ -1,0 +1,23 @@
+Input video resolution count:
+Resolution (1280, 720): 14 videos
+Resolution (352, 288): 23 videos
+Resolution (1920, 1080): 28 videos
+Resolution (176, 144): 9 videos
+Resolution (704, 576): 5 videos
+Resolution (3840, 2160): 4 videos
+Resolution (720, 486): 6 videos
+Resolution (352, 240): 4 videos
+Resolution (4096, 2160): 4 videos
+Resolution (854, 480): 1 videos
+
+Output segment resolution count:
+Resolution (1280, 720): 38 segments
+Resolution (352, 288): 83 segments
+Resolution (1920, 1080): 142 segments
+Resolution (176, 144): 23 segments
+Resolution (704, 576): 9 segments
+Resolution (3840, 2160): 8 segments
+Resolution (720, 486): 12 segments
+Resolution (4096, 2160): 5 segments
+Resolution (854, 480): 10 segments
+Resolution (352, 240): 3 segments
