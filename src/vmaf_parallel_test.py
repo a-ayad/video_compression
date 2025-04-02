@@ -64,9 +64,9 @@ if __name__ == "__main__":
     # Define your scene files - update paths as needed
     scenes = [
         # (reference_file, encoded_file)
-        ("videos/temp_scenes/scene_000.mp4", "videos/temp_scenes/output_scene_0_hevc_nvenc.mp4"),
-        ("videos/temp_scenes/scene_001.mp4", "videos/temp_scenes/output_scene_1_hevc_nvenc.mp4"),
-        ("videos/temp_scenes/scene_002.mp4", "videos/temp_scenes/output_scene_2_hevc_nvenc.mp4"),
+        ("videos/temp_scenes/scene_000.mp4", "videos/temp_scenes/output_scene_0_h264_nvenc.mp4"),
+        ("videos/temp_scenes/scene_001.mp4", "videos/temp_scenes/output_scene_1_h264_nvenc.mp4"),
+        ("videos/temp_scenes/scene_002.mp4", "videos/temp_scenes/output_scene_2_h264_nvenc.mp4"),
     ]
     
     # Check if files exist

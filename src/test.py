@@ -5,7 +5,7 @@ import time
 
 # Define input and output file paths
 input_file = "videos/temp_scenes/scene_002.mp4"
-encoded_file = "videos/temp_scenes/output_scene_2_av1_nvenc.mp4"
+encoded_file = "videos/temp_scenes/output_scene_2_h264_nvenc.mp4"
 
 print("Running VMAF calculation benchmarks...")
 print("-" * 60)
@@ -23,7 +23,7 @@ print("-" * 60)
 print("2. With downscaling enabled:")
 start_time = time.time()
 vmaf = calculate_vmaf_advanced(input_file, encoded_file, 
-                             use_downscaling=True, scale_factor=0.5)
+                             use_downscaling=True, scale_factor=0.75)
 elapsed = time.time() - start_time
 print(f"VMAF: {vmaf}")
 print(f"Time taken: {elapsed:.2f} seconds")

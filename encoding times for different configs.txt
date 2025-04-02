@@ -1,0 +1,23 @@
+Using 3 clips for VMAF calculation
+Clip at 2.75s VMAF: 83.67
+Clip at 13.75s VMAF: 89.83
+Clip at 24.75s VMAF: 93.15
+VMAF for concatenated video: 88.88
+VMAF for full video: 90.47
+Full encoded video size: 52.77311325073242 MB
+Concatenated encoded video size: 23.82027244567871 MB
+Original video frame count: 1375
+Merged video frame count:   1375
+Original video frame rate:  50.0
+Merged video frame rate:    50.0
+Enhanced encoding completed in 254.15 seconds
+
+
+
+VMAF for concatenated video: 88.65
+VMAF for full video: 95.07
+Full encoded video size: 52.77311325073242 MB
+Concatenated encoded video size: 23.82027244567871 MB
+Enhanced encoding completed in 425.04 seconds
+
+

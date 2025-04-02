@@ -47,7 +47,7 @@ def reencode_scene(video_path, start_time, end_time, output_path):
         # Process video only.
         out = ffmpeg.output(
             stream.video, output_path,
-            vcodec='hevc_nvenc', cq=20, preset='fast'
+            vcodec='h264_nvenc', cq=10, preset='fast'
         )
 
     out.overwrite_output().run()

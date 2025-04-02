@@ -1,3 +1,12 @@
+import time
+import concurrent.futures
+import tempfile
+import subprocess
+import json
+import os
+from ffmpeg_quality_metrics import FfmpegQualityMetrics
+    
+
 def calculate_vmaf_advanced(input_file, encoded_file, 
                            use_sampling=True, num_clips=3, clip_duration=2,
                            use_downscaling=False, scale_factor=0.5,
@@ -18,13 +27,7 @@ def calculate_vmaf_advanced(input_file, encoded_file,
     Returns:
         Average VMAF score
     """
-    import tempfile
-    import os
-    import subprocess
-    import json
-    import concurrent.futures
-    from ffmpeg_quality_metrics import FfmpegQualityMetrics
-    
+  
     # Check if input files exist
     if not os.path.exists(input_file):
         print(f"Error: Input file '{input_file}' does not exist")
@@ -290,3 +293,102 @@ def calculate_vmaf_advanced(input_file, encoded_file,
             os.rmdir(temp_dir)
         except Exception as e:
             print(f"Error removing temp directory: {e}")
+
+
+
+def calculate_parallel_vmaf(reference_scenes, encoded_files,use_downscaling=False, scale_factor=0.5):
+    """Process VMAF calculations in parallel for multiple scenes
+    
+    Args:
+        reference_scenes: List of reference scene file names in the temp folder
+        encoded_files: List of encoded file paths
+        temp_folder: Path to the temp folder containing reference scenes
+        
+    Returns:
+        Tuple of (results list, total processing time)
+    """
+    print("\n== PARALLEL VMAF PROCESSING ==")
+    start_time = time.time()
+    results = []
+    
+    # Ensure we have valid inputs
+    if len(reference_scenes) != len(encoded_files):
+        print(f"Warning: Number of reference scenes ({len(reference_scenes)}) doesn't match encoded files ({len(encoded_files)})")
+        # Use the minimum length to avoid index errors
+        scene_count = min(len(reference_scenes), len(encoded_files))
+    else:
+        scene_count = len(reference_scenes)
+    
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        # Start all VMAF calculations in parallel
+        futures = []
+        for i in range(scene_count):
+            # Construct full path for reference scene from temp folder
+            reference_path = reference_scenes[i]
+            encoded_path = encoded_files[i]
+            if use_downscaling:
+                futures.append((i+1, executor.submit(
+                calculate_vmaf_advanced, reference_path, encoded_path, use_downscaling=True, scale_factor=scale_factor,
+                )))
+            else:
+                futures.append((i+1, executor.submit(
+                    calculate_vmaf_advanced, reference_path, encoded_path
+                )))
+        # Collect results as they complete
+        for i, future in futures:
+            try:
+                vmaf = future.result()
+                scene_result = {
+                    'scene': i,
+                    'reference': reference_scenes[i-1],
+                    'encoded': os.path.basename(encoded_files[i-1]),
+                    'vmaf': vmaf,
+                }
+                results.append(scene_result)
+                print(f"Scene {i} VMAF: {vmaf}")
+            except Exception as e:
+                print(f"Error processing scene {i}: {e}")
+    
+    total_time = time.time() - start_time
+    print(f"Total parallel processing time: {total_time:.2f}s")
+    extracted_results= extract_vmaf_scores(results)
+    return [score for _, score in extracted_results]
+
+
+def extract_vmaf_scores(results):
+    """
+    Extract scene numbers and VMAF values from VMAF calculation results
+    
+    Args:
+        results: List of dictionaries containing scene information and VMAF scores
+        
+    Returns:
+        List of tuples containing (scene_number, vmaf_score)
+    """
+    vmaf_values = []
+    for result in results:
+        scene_number = result['scene']
+        vmaf_score = result['vmaf']
+        vmaf_values.append((scene_number, vmaf_score))
+    
+    return vmaf_values
+
+
+# Example usage:
+# results = [{'scene': 1, 'reference': './videos/temp_scenes/scene_000.mp4', 
+#             'encoded': 'output_scene_0_av1_nvenc.mp4', 'vmaf': 86.37}, 
+#            {'scene': 2, 'reference': './videos/temp_scenes/scene_001.mp4', 
+#             'encoded': 'output_scene_1_av1_nvenc.mp4', 'vmaf': 90.29}, 
+#            {'scene': 3, 'reference': './videos/temp_scenes/scene_002.mp4', 
+#             'encoded': 'output_scene_2_av1_nvenc.mp4', 'vmaf': 93.01}]
+# 
+# vmaf_scores = extract_vmaf_scores(results)
+# print(vmaf_scores)  # [(1, 86.37), (2, 90.29), (3, 93.01)]
+#
+# # To get just the VMAF values:
+# vmaf_values = [score for _, score in vmaf_scores]
+# print(vmaf_values)  # [86.37, 90.29, 93.01]
+#
+# # To get average VMAF:
+# avg_vmaf = sum(vmaf_values) / len(vmaf_values)
+# print(f"Average VMAF: {avg_vmaf:.2f}")  # Average VMAF: 89.89
