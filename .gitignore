@@ -36,17 +36,22 @@ ehthumbs_vista.db
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
-# Keep videos folder but ignore its contents
+
+# First, ignore everything in videos
+videos/*
+
+# Then re-include all subdirectories (but not their contents)
+!videos/*/
+
+# Explicitly ignore contents of each subdirectory
 videos/dataset/*
-!videos/dataset/.gitkeep
 videos/input_videos/*
-!videos/input_videos/.gitkeep
-videos/output_videos/*
-!videos/output_videos/.gitkeep
+videos/output_videos/* 
 videos/temp_scenes/*
-!videos/temp_scenes/.gitkeep
 videos/plots/*
-!videos/plots/.gitkeep
+# Keep only .gitkeep files
+!videos/*/.gitkeep
+
 
 # Windows Installer files
 *.cab
