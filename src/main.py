@@ -393,7 +393,6 @@ def enhanced_encoding(input_file,output_video_dir='videos/output_videos',
         print(f"Error: {e}")        
         
 
-
            
 if __name__ == "__main__":
     input_video_dir= './videos/input_videos'
